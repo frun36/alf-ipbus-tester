@@ -5,6 +5,7 @@
 
 #include "swt.h"
 #include "RpcInfo.h"
+#include "SequenceGenerator.h"
 
 int main(void) {
     std::mutex mtx;
@@ -14,13 +15,17 @@ int main(void) {
 
     RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
-    SwtSequence s = {
-        // SwtOperation(SwtOperation::Type::Write, 0x1004, 0x01),
-        SwtOperation(SwtOperation::Type::RmwBits, 0x1004, 0xffffffff, 0x04),
-        SwtOperation(SwtOperation::Type::RmwSum, 0x1004, 0x01),
-        SwtOperation(SwtOperation::Type::Read, 0x1004),
-        // SwtOperation(SwtOperation::Type::Write, 0x1004),
-    };
+    // SwtSequence s = {
+    //     // SwtOperation(SwtOperation::Type::Write, 0x1004, 0x01),
+    //     SwtOperation(SwtOperation::Type::RmwBits, 0x1004, 0xffffffff, 0x04),
+    //     SwtOperation(SwtOperation::Type::RmwSum, 0x1004, 0x01),
+    //     SwtOperation(SwtOperation::Type::Read, 0x1004),
+    //     // SwtOperation(SwtOperation::Type::Write, 0x1004),
+    // };
+
+    SequenceGenerator gen;
+    SwtSequence s = gen.generateRandom(10);
+    
     
     std::cout << "Request:\n" << s.getRequest() << "\nExpected response:\n" << s.getResponse() << "\n";
 

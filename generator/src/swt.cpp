@@ -40,22 +40,22 @@ std::string SwtOperation::getRequest() const {
 
 std::string SwtOperation::getResponse() const {
     std::stringstream ss;
-    ss << "0\n";
+    ss << "0";
     
     switch (type) {
         case Type::Read:
-            ss << "0x000";
+            ss << "\n0x000";
             ss << std::hex << std::setw(8) << std::setfill('0') << address;
             ss << "........";
             break;
         case Type::RmwBits:
-            ss << "0x002";
+            ss << "\n0x002";
             ss << std::hex << std::setw(8) << std::setfill('0') << address;
             ss << "........";
             ss << "\n0";
             break;
         case Type::RmwSum:
-            ss << "0x004";
+            ss << "\n0x004";
             ss << std::hex << std::setw(8) << std::setfill('0') << address;
             ss << "........";
             break;
