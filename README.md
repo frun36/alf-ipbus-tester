@@ -1,0 +1,2 @@
+# ALF IPbus tester
+This repository contains the code which will be used to thoroughly test [ALF IPbus](https://github.com/VictorPierozak/ALFIPbus), a temporary solution for migrating the FIT Detector Control System to the standard ALFRED framework developed for ALICE, CERN.

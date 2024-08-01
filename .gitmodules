@@ -1,0 +1,3 @@
+[submodule "IPbus"]
+	path = IPbus
+	url = git@github.com:VictorPierozak/IPbus.git
