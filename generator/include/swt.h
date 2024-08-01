@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <vector>
@@ -37,4 +38,20 @@ struct SwtSequence {
     std::string getRequest() const;
 
     std::string getResponse() const;
+
+    static bool match(std::string expected, std::string response) {
+        if(expected.size() != response.size()) {
+            std::cerr << "Response sizes don't match";
+            return false;
+        }
+
+        for(size_t i = 0; i < expected.size(); i++) {
+            if(expected[i] != response[i] && expected[i] != '.') {
+                std::cerr << "Unexpected character in response";
+                return false;
+            }
+        }
+
+        return true;
+    }
 };

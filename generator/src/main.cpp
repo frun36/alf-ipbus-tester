@@ -55,6 +55,8 @@ int main(void) {
 
         // Reset the flag
         isDataReceived = false;
+
+        std::cout << SwtSequence::match(s.getResponse(), receivedData) << "\n";
     // }
 
 
