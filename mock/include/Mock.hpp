@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <vector>
-#include <boost/log/trivial.hpp>
 #include "Memory.h"
 
 class Mock : public ipbus::Memory {

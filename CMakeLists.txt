@@ -15,4 +15,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Add all sub-targets
 add_subdirectory(IPbus)
 add_subdirectory(mock)
-# add_subdirectory(generator)
+add_subdirectory(generator)
