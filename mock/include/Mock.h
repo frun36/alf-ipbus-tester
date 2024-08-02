@@ -32,14 +32,9 @@ public:
         return true;
     }
 
-    void lock() override {
-        int a = *((int*)0);
-        a++;
-    }
+    void lock() override { }
 
-    void unlock() override {
-        
-    }
+    void unlock() override { }
 
     size_t getSize() const {
         return m_size;
