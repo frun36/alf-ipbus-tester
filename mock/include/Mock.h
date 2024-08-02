@@ -23,18 +23,36 @@ public:
             std::cerr << "Failed to open file" << std::endl;
         }
 
+        std::vector<std::string> lines;
         std::string line;
         while (std::getline(inputFile, line)) {
-            size_t commaPos = line.find(',');
+            lines.push_back(line);
+        }
+
+        line = lines.back();
+        size_t commaPos = line.find(',');
+
+        if (commaPos != std::string::npos) {
+            std::string hexPart = line.substr(0, commaPos);
+            
+            uint32_t address = std::stoul(hexPart, nullptr, 16);
+
+            m_registers = std::vector<Register>(address + 1);
+        } else {
+            std::cerr << "Register parsing failed for string: " << line << "\n";
+        }
+
+        for (const auto& currLine : lines) {
+            size_t commaPos = currLine.find(',');
 
             if (commaPos != std::string::npos) {
-                std::string hexPart = line.substr(0, commaPos);
+                std::string hexPart = currLine.substr(0, commaPos);
                 
                 uint32_t address = std::stoul(hexPart, nullptr, 16);
 
-                m_registers[address] = Register(line);
+                m_registers[address] = Register(currLine);
             } else {
-                std::cerr << "Register parsing failed for string: " << line << "\n";
+                std::cerr << "Register parsing failed for string: " << currLine << "\n";
             }
 
         }
