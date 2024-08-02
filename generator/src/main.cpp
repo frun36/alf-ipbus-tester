@@ -16,10 +16,10 @@ int main(void) {
     RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
     SwtSequence s = {
-        // SwtOperation(SwtOperation::Type::Write, 0x1004, 0x01),
+        SwtOperation(SwtOperation::Type::Write, 0x100f, 0xc0ffee),
         // SwtOperation(SwtOperation::Type::RmwBits, 0x1004, 0xffffffff, 0x04),
-        SwtOperation(SwtOperation::Type::RmwSum, 0x1004, 0xffffffff),
-        // SwtOperation(SwtOperation::Type::Read, 0x1004),
+        // SwtOperation(SwtOperation::Type::RmwSum, 0x1004, 0xffffffff),
+        // SwtOperation(SwtOperation::Type::Read, 0x104),
         // SwtOperation(SwtOperation::Type::Write, 0x1004),
     };
 

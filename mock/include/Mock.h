@@ -1,34 +1,76 @@
 #pragma once
 
 #include <cstdint>
-#include <cstring>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
+
 #include "Memory.h"
+#include "Register.h"
 
 class Mock : public ipbus::Memory {
 private:
     size_t m_size;
-    uint32_t* m_registers;
+    std::vector<Register> m_registers;
 public:
-    Mock(size_t size) : m_size(size), m_registers(new uint32_t[4*size]) {}
+    Mock(size_t size) : m_size(size), m_registers(size) {}
 
-    ~Mock() { 
-        delete [] m_registers; 
+    Mock(std::string filename) {
+        std::ifstream inputFile(filename);
+
+        if (!inputFile.is_open()) {
+            std::cerr << "Failed to open file" << std::endl;
+        }
+
+        std::string line;
+        while (std::getline(inputFile, line)) {
+            size_t commaPos = line.find(',');
+
+            if (commaPos != std::string::npos) {
+                std::string hexPart = line.substr(0, commaPos);
+                
+                uint32_t address = std::stoul(hexPart, nullptr, 16);
+
+                m_registers[address] = Register(line);
+            } else {
+                std::cerr << "Register parsing failed for string: " << line << "\n";
+            }
+
+        }
+    }
+
+    bool verifyRegisterBlockRead(uint32_t address, size_t words) const {
+        for (size_t i = address; i < address + words; i++)
+            if(!m_registers[i].isRead)
+                return false;
+        return true;
+    }
+
+    bool verifyRegisterBlockWrite(uint32_t address, size_t words) const {
+        for (size_t i = address; i < address + words; i++)
+            if(!m_registers[i].isWrite)
+                return false;
+        return true;
     }
 
     bool dataRead(uint32_t address, size_t words, uint32_t* out) const override {
-        if (address + words > m_size)
+        if (!verifyRegisterBlockRead(address, words))
             return false;
         
-        std::memcpy(out, m_registers + address, words);
+        for(size_t i = 0; i < words; i++)
+            out[i] = m_registers[address + i].data;
+        
         return true;
     }
 
     bool dataWrite(uint32_t address, size_t words, const uint32_t* in) override {
-        if (address + words > m_size)
+        if (!verifyRegisterBlockWrite(address, words))
             return false;
         
-        std::memcpy(m_registers + address, in, words);
+        for(size_t i = 0; i < words; i++)
+            m_registers[address + i].data = in[i];
+
         return true;
     }
 
