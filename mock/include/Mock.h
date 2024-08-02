@@ -10,7 +10,7 @@ private:
     size_t m_size;
     uint32_t* m_registers;
 public:
-    Mock(size_t size) : m_size(size), m_registers(new uint32_t[size]) {}
+    Mock(size_t size) : m_size(size), m_registers(new uint32_t[4*size]) {}
 
     ~Mock() { 
         delete [] m_registers; 
