@@ -1,34 +1,44 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdlib>
+#include <cstring>
 #include <vector>
 #include "Memory.h"
 
 class Mock : public ipbus::Memory {
-    uint32_t* m_registers;
+private:
     size_t m_size;
-
+    uint32_t* m_registers;
+public:
     Mock(size_t size) : m_size(size), m_registers(new uint32_t[size]) {}
 
     ~Mock() { 
         delete [] m_registers; 
     }
 
-    ipbus::InfoCode dataRead(uint32_t address, size_t words, uint32_t* out) const override {
+    bool dataRead(uint32_t address, size_t words, uint32_t* out) const override {
         if (address + words > m_size)
-            return ipbus::InfoCode::ErrorRead;
+            return false;
         
         std::memcpy(out, m_registers + address, words);
-        return ipbus::InfoCode::Response;
+        return true;
     }
 
-    ipbus::InfoCode dataWrite(uint32_t address, size_t words, const uint32_t* in) override {
+    bool dataWrite(uint32_t address, size_t words, const uint32_t* in) override {
         if (address + words > m_size)
-            return ipbus::InfoCode::ErrorWrite;
+            return false;
         
         std::memcpy(m_registers + address, in, words);
-        return ipbus::InfoCode::Response;
+        return true;
+    }
+
+    void lock() override {
+        int a = *((int*)0);
+        a++;
+    }
+
+    void unlock() override {
+        
     }
 
     size_t getSize() const {
