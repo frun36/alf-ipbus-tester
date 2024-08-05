@@ -17,15 +17,7 @@ int main(void) {
 
     SwtSequence s = {
         SwtOperation(SwtOperation::Type::Write, 0x1004, 0xc0ffee),
-        // SwtOperation(SwtOperation::Type::RmwBits, 0x1004, 0xffffffff, 0x04),
-        // SwtOperation(SwtOperation::Type::RmwSum, 0x1004, 0xffffffff),
-        // SwtOperation(SwtOperation::Type::Read, 0x104),
-        // SwtOperation(SwtOperation::Type::Write, 0x1004),
     };
-
-    // SequenceGenerator gen;
-    // SwtSequence s = gen.generateRandom(10);
-    
     
     std::cout << "Request:\n" << s.getRequest() << "\nExpected response:\n" << s.getResponse() << "\n";
 
@@ -33,31 +25,16 @@ int main(void) {
 
     DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seq.c_str());
 
-    // while(true) {
-        // std::string sequence = "";
-        // std::cout << "Input SWT sequence:\nBEGIN\n";
-        // std::string line = "";
-        // std::getline(std::cin, line);
-        // while (line != "END") {
-        //     sequence += line + "\n";
-        //     std::getline(std::cin, line);
-        // }
+    std::unique_lock<std::mutex> lock(mtx);
+    cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
 
-        // if (sequence.back() == '\n') sequence.pop_back();
+    // Process the received data
+    std::cout << "Received data:\n" << receivedData << std::endl;
 
-        // DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", sequence.c_str());
+    // Reset the flag
+    isDataReceived = false;
 
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
-
-        // Process the received data
-        std::cout << "Received data:\n" << receivedData << std::endl;
-
-        // Reset the flag
-        isDataReceived = false;
-
-        std::cout << SwtSequence::match(s.getResponse(), receivedData) << "\n";
-    // }
+    std::cout << SwtSequence::match(s.getResponse(), receivedData) << "\n";
 
 
     return 0;

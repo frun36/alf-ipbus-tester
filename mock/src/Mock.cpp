@@ -1,45 +1,8 @@
 #include "Mock.h"
 
 Mock::Mock(std::string filename) {
-    std::ifstream inputFile(filename);
-
-    if (!inputFile.is_open()) {
-        std::cerr << "Failed to open file" << std::endl;
-    }
-
-    std::vector<std::string> lines;
-    std::string line;
-    while (std::getline(inputFile, line)) {
-        lines.push_back(line);
-    }
-
-    // Find size of address space
-    size_t commaPos = line.find(',');
-
-    if (commaPos != std::string::npos) {
-        std::string hexPart = line.substr(0, commaPos);
-
-        uint32_t address = std::stoul(hexPart, nullptr, 16);
-
-        m_registers = std::vector<Register>(address + 1);
-    } else {
-        std::cerr << "Register parsing failed for string: " << line << "\n";
-    }
-
-    // Set register RW properties
-    for (const auto& currLine : lines) {
-        size_t commaPos = currLine.find(',');
-
-        if (commaPos != std::string::npos) {
-            std::string hexPart = currLine.substr(0, commaPos);
-
-            uint32_t address = std::stoul(hexPart, nullptr, 16);
-
-            m_registers[address] = Register(currLine);
-        } else {
-            std::cerr << "Register parsing failed for string: " << currLine << "\n";
-        }
-    }
+    m_registers = Register::readMapFromFile(filename);
+    m_size = m_registers.size();
 }
 
 bool Mock::verifyRegisterBlockRead(uint32_t address, size_t words) const {
