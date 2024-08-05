@@ -6,6 +6,7 @@
 #include "swt.h"
 #include "RpcInfo.h"
 #include "SequenceGenerator.h"
+#include "Register.h"
 
 int main(void) {
     std::mutex mtx;
@@ -15,14 +16,26 @@ int main(void) {
 
     RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
-    SwtSequence s = {
-        SwtOperation(SwtOperation::Type::Write, 0x1004, 0xc0ffee),
-    };
+    std::vector<Register> registers = Register::readMapFromFile("ftm_registers.csv");
+
+    SwtSequence s = {};
+
+    for (size_t addr = 0; addr < registers.size(); addr++) {
+        if (registers[addr].isRead) {
+            s.addOperation(SwtOperation(SwtOperation::Type::Read, addr));
+
+            if (registers[addr].isWrite) {
+                s.addOperation(SwtOperation(SwtOperation::Type::Write, addr, 0xb00b));
+                s.addOperation(SwtOperation(SwtOperation::Type::RmwBits, addr, 0xffff, 0x4000));
+                s.addOperation(SwtOperation(SwtOperation::Type::RmwSum, addr, 0x0002));
+                s.addOperation(SwtOperation(SwtOperation::Type::Read, addr));
+            }
+        }
+    }
     
-    std::cout << "Request:\n" << s.getRequest() << "\nExpected response:\n" << s.getResponse() << "\n";
 
     std::string seq = s.getRequest();
-
+    std::cout << "Sending data:\n" << seq << "\n\n";
     DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seq.c_str());
 
     std::unique_lock<std::mutex> lock(mtx);
@@ -31,10 +44,9 @@ int main(void) {
     // Process the received data
     std::cout << "Received data:\n" << receivedData << std::endl;
 
-    // Reset the flag
-    isDataReceived = false;
 
-    std::cout << SwtSequence::match(s.getResponse(), receivedData) << "\n";
+    isDataReceived = false;
+    std::cout << SwtSequence::match(s.getSuccessResponse(), receivedData) << "\n";
 
 
     return 0;

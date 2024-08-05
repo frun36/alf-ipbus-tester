@@ -25,7 +25,7 @@ struct SwtOperation {
     
     std::string getRequest() const;
 
-    std::string getResponse() const;
+    std::string getSuccessResponse() const;
 };
 
 struct SwtSequence {
@@ -37,7 +37,7 @@ struct SwtSequence {
 
     std::string getRequest() const;
 
-    std::string getResponse() const;
+    std::string getSuccessResponse() const;
 
     static bool match(std::string expected, std::string response) {
         if(expected.size() != response.size()) {
@@ -46,8 +46,8 @@ struct SwtSequence {
         }
 
         for(size_t i = 0; i < expected.size(); i++) {
-            if(expected[i] != response[i] && expected[i] != '.') {
-                std::cerr << "Unexpected character in response";
+            if(std::tolower(expected[i]) != std::tolower(response[i]) && expected[i] != '.') {
+                std::cerr << "Unexpected character in response: " << response[i];
                 return false;
             }
         }

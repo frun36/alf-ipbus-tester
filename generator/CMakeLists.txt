@@ -15,7 +15,7 @@ endif()
 
 # Set the include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/shared)
+include_directories(${PROJECT_SOURCE_DIR}/shared/include)
 
 # Add the source files
 file(GLOB SOURCES "src/*.cpp")
