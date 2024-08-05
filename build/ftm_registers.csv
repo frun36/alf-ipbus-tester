@@ -46,7 +46,7 @@
 002d,rw
 002e,rw
 002f,rw
-0030,rw            // Convert the hex part to uint32_t
+0030,rw
 0031,rw
 0032,rw
 0033,rw
@@ -229,7 +229,7 @@
 00e4,rw
 00e5,rw
 00e6,rw
-00e7,rw            // Convert the hex part to uint32_t
+00e7,rw
 00e8,r
 00e9,r
 00ea,r
