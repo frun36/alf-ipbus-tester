@@ -29,7 +29,7 @@ public:
             lines.push_back(line);
         }
 
-        line = lines.back();
+        // Find size of address space
         size_t commaPos = line.find(',');
 
         if (commaPos != std::string::npos) {
@@ -42,6 +42,7 @@ public:
             std::cerr << "Register parsing failed for string: " << line << "\n";
         }
 
+        // Set register RW properties
         for (const auto& currLine : lines) {
             size_t commaPos = currLine.find(',');
 

@@ -5,19 +5,17 @@
 #include <iostream>
 
 struct Register {
-    bool isRead = false;
-    bool isWrite = false;
-    uint32_t data = 0;
+    bool isRead;
+    bool isWrite;
+    uint32_t data;
 
-    Register() = default;
+    Register() : isRead(false), isWrite(false), data(0) {}
 
-    Register(std::string input) {
+    Register(std::string input) : isRead(true), isWrite(false), data(0) {
         size_t commaPos = input.find(',');
 
         if (commaPos != std::string::npos) {
             std::string strPart = input.substr(commaPos + 1);
-
-            isRead = true;
 
             if (strPart == "rw") {
                 isWrite = true;
