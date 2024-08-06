@@ -16,7 +16,7 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(mock ${SOURCES})
 
 # Link to the IPbus library
-target_link_libraries(mock ipbus pthread)
+target_link_libraries(mock ipbus pthread shared)
 
 # Specify the output directory for the mock executable
 set_target_properties(mock PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

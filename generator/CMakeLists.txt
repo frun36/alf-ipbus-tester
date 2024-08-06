@@ -16,6 +16,7 @@ endif()
 # Set the include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/shared/include)
+include_directories(${PROJECT_SOURCE_DIR}/tomlplusplus/include)
 
 # Add the source files
 file(GLOB SOURCES "src/*.cpp")
@@ -24,7 +25,7 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(generator ${SOURCES})
 
 # Link to the DIM library
-target_link_libraries(generator ${DIM_LIBRARY} pthread)
+target_link_libraries(generator ${DIM_LIBRARY} pthread shared)
 
 # Specify the output directory for the generator executable
 set_target_properties(generator PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
