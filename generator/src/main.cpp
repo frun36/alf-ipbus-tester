@@ -11,50 +11,38 @@
 
 int main(void) {
     Config cfg = Config::readFile("../example_config.toml");
-    std::cout << cfg.global.name << "\n"
-              << cfg.global.registerFile << "\n"
-              << cfg.global.rngSeed << "\n"
-              << cfg.tests[0].name << "\n"
-              << cfg.tests[1].name << "\n";
 
-    // std::mutex mtx;
-    // std::condition_variable cv;
-    // bool isDataReceived = false;
-    // std::string receivedData = "";
+    std::mutex mtx;
+    std::condition_variable cv;
+    bool isDataReceived = false;
+    std::string receivedData = "";
 
-    // RpcInfo info(mtx, cv, isDataReceived, receivedData);
+    RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
-    // std::vector<Register> registers = Register::readMapFromFile("ftm_registers.csv");
-
-    // SwtSequence s = {};
-
-    // for (size_t addr = 0; addr < registers.size(); addr++) {
-    //     if (registers[addr].isRead) {
-    //         s.addOperation(SwtOperation(SwtOperation::Type::Read, addr));
-
-    //         if (registers[addr].isWrite) {
-    //             s.addOperation(SwtOperation(SwtOperation::Type::Write, addr, 0xb00b));
-    //             s.addOperation(SwtOperation(SwtOperation::Type::RmwBits, addr, 0xffff, 0x4000));
-    //             s.addOperation(SwtOperation(SwtOperation::Type::RmwSum, addr, 0x0002));
-    //             s.addOperation(SwtOperation(SwtOperation::Type::Read, addr));
-    //         }
-    //     }
-    // }
+    std::vector<Register> registers = Register::readMapFromFile("ftm_registers.csv");
     
+    for(const auto& test : cfg.tests) {
+        if(!test.enabled) {
+            std::cout << "Test \"" << test.name << "\" is disabled\n";
+            continue;
+        }
 
-    // std::string seq = s.getRequest();
-    // std::cout << "Sending data:\n" << seq << "\n\n";
-    // DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seq.c_str());
+        std::cout << "Performing test \"" << test.name << "\"\n";
+        std::string seq = test.sequence.getRequest();
 
-    // std::unique_lock<std::mutex> lock(mtx);
-    // cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
+        std::cout << "Sending data:\n" << seq << "\n\n";
+        DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seq.c_str());
 
-    // // Process the received data
-    // std::cout << "Received data:\n" << receivedData << std::endl;
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
+
+        // Process the received data
+        std::cout << "Received data:\n" << receivedData << std::endl;
 
 
-    // isDataReceived = false;
-    // std::cout << SwtSequence::match(s.getSuccessResponse(), receivedData) << "\n";
+        isDataReceived = false;
+        std::cout << SwtSequence::match(test.sequence.getSuccessResponse(), receivedData) << "\n";
+    }
 
 
     return 0;

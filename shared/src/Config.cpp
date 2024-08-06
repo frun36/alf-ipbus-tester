@@ -11,7 +11,10 @@ Config Config::readFile(std::string filename) {
                   << err << "\n";
     }
 
-    return Config(*tbl.as_table());
+    Config c(*tbl.as_table());
+    c.global.registerFile = filename.substr(0, filename.find_last_of("/") + 1) + c.global.registerFile;
+
+    return c;
 }
 
 Config::Config(const toml::table& tbl) 

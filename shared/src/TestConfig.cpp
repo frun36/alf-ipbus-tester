@@ -31,7 +31,7 @@ TestConfig::TestConfig(const toml::table& tbl) {
             uint32_t data0 = 0;
             uint32_t data1 = 0;
 
-            if(typeStr == "read") {
+            if (typeStr == "read") {
                 type = SwtOperation::Type::Read;
             } else if (typeStr == "write") {
                 type = SwtOperation::Type::Write;
@@ -50,9 +50,6 @@ TestConfig::TestConfig(const toml::table& tbl) {
                 std::cerr << "Invalid SWT operation type " << typeStr << "\n";
             }
 
-            
             sequence.addOperation(SwtOperation(type, reg, data0, data1));
         });
-
-    std::cout << sequence.getRequest();
 }
