@@ -12,7 +12,7 @@ struct TestConfig {
     bool randomise_operations;
     bool randomise_response;
     std::vector<uint32_t> registers;
-    std::vector<SwtOperation> operations;
+    SwtSequence sequence;
 
     TestConfig(const toml::table& tbl);
 };

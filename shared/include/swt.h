@@ -31,6 +31,8 @@ struct SwtOperation {
 struct SwtSequence {
     std::vector<SwtOperation> operations;
 
+    SwtSequence() = default;
+
     SwtSequence(std::initializer_list<SwtOperation> operations) : operations(operations) {}
 
     void addOperation(SwtOperation operation);
