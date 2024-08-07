@@ -17,8 +17,6 @@ int main(void) {
 
     RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
-    std::vector<Register> registers = Register::readMapFromFile("ftm_registers.csv");
-
     try {
         Config cfg = Config::readFile("../example_config.toml");
 
