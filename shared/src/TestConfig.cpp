@@ -97,3 +97,14 @@ TestConfig::TestConfig(const toml::table& tbl) {
     if(!splitSeq)
         sequences.push_back(sequence);
 }
+
+void TestConfig::randomiseSequences(Rng& rng) {
+    for(auto& seq : sequences) {
+        size_t length = seq.operations.size();
+        std::vector<SwtOperation> newOperations;
+        for(size_t i = 0; i < length; i++)
+            newOperations.push_back(seq.operations[rng.randint(0, length - 1)]);
+        
+        seq.operations = newOperations;
+    }
+}

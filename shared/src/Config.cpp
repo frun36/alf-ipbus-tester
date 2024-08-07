@@ -44,4 +44,8 @@ Config::Config(const toml::table& tbl)
     const auto& testTables = *tbl["tests"].as_array();
 
     testTables.for_each([this](const auto& t) { tests.emplace_back(TestConfig(*t.as_table())); });
+
+    for (auto& test : tests)
+        if (test.randomiseOperations)
+            test.randomiseSequences(global.rng);
 }

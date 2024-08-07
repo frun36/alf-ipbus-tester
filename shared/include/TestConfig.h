@@ -4,6 +4,7 @@
 #include <exception>
 #include <vector>
 
+#include "Rng.h"
 #include "swt.h"
 #include "toml++/toml.hpp"
 
@@ -25,4 +26,6 @@ struct TestConfig {
     bool splitSeq;
 
     TestConfig(const toml::table& tbl);
+
+    void randomiseSequences(Rng& rng);
 };

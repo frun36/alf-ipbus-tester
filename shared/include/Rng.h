@@ -8,11 +8,13 @@ class Rng {
     uint32_t m_m;
     uint32_t m_a;
 
+   public:
+    Rng() = default;
+
     Rng(uint32_t seed, uint32_t m, uint32_t a)
         : m_prev(seed), m_m(m), m_a(a) {
     }
 
-   public:
     static Rng minstd(uint32_t seed) {
         return Rng(seed, ((uint32_t)1 << 31) - 1, 48271);
     }

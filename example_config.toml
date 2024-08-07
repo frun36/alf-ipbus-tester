@@ -8,22 +8,22 @@ rng_seed = 36                                   # Seed of the RNG used for seque
 
 [[tests]]
 name = "Read test"
-enabled = true                                  # Enables test
-randomise_operations = true                     # Whether order of operations should be randomised *
+enabled = false                                 # Enables test
 randomise_response = true                       # Whether response from mock should be randomised *
 registers = [{ begin = 0x0, end = 0xf }, 0xff]  # Register block to test (start-end inclusively) + one register
 operations = [{ type = "read" }]                # List of operations to be performed on each register
-split_seq = true                                # Splits operations into separate sequences (by register)
 
 [[tests]]
 name = "Write test"
-enabled = false                                 # Enables test
+enabled = true                                  # Enables test
+randomise_operations = true                     # Whether order of operations should be randomised
 registers = [0x1, 0x2, 0x5]                     # List of registers to be tested
 operations = [                                  # List of operations to be performed
     { type = "read" },
     { type = "write", data = [0xdeadbeef] },
     { type = "rmw_bits", data = [0xfffff000, 0x00000001] },
 ]
+split_seq = true                                # Splits operations into separate sequences (by register)
 
 # Notes:
 # - options marked with '*' will be developed and clarified later (based on parsing library functionality)

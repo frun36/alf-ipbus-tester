@@ -4,6 +4,7 @@
 
 #include "toml++/toml.hpp"
 #include "Register.h"
+#include "Rng.h"
 
 struct GlobalConfig {
     struct Exception : public std::runtime_error {
@@ -17,6 +18,7 @@ struct GlobalConfig {
     std::string name;
     std::string registerFile;
     std::vector<Register> registerMap;
+    Rng rng;
     unsigned rngSeed;
 
     GlobalConfig(const toml::table& tbl);
