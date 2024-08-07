@@ -18,10 +18,11 @@ struct TestConfig {
 
     std::string name;
     bool enabled;
-    bool randomise_operations;
-    bool randomise_response;
+    bool randomiseOperations;
+    bool randomiseResponse;
     std::vector<uint32_t> registers;
-    SwtSequence sequence;
+    std::vector<SwtSequence> sequences;
+    bool splitSeq;
 
     TestConfig(const toml::table& tbl);
 };

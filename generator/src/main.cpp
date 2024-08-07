@@ -25,22 +25,25 @@ int main(void) {
                 std::cout << "Test \"" << test.name << "\" is disabled\n";
                 continue;
             }
-
+            
             std::cout << "Performing test \"" << test.name << "\"\n";
-            std::string seq = test.sequence.getRequest();
 
-            std::cout << "Sending data:\n" << seq << "\n\n";
-            DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seq.c_str());
+            for(const auto& seq : test.sequences) {    
+                std::string seqStr = seq.getRequest();
 
-            std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
+                std::cout << "Sending data:\n" << seqStr << "\n\n";
+                DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seqStr.c_str());
 
-            // Process the received data
-            std::cout << "Received data:\n" << receivedData << std::endl;
+                std::unique_lock<std::mutex> lock(mtx);
+                cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
 
+                // Process the received data
+                std::cout << "Received data:\n" << receivedData << std::endl;
 
-            isDataReceived = false;
-            std::cout << SwtSequence::match(test.sequence.getSuccessResponse(), receivedData) << "\n";
+                isDataReceived = false;
+                std::cout << SwtSequence::match(seq.getSuccessResponse(), receivedData) << "\n";
+            }
+
         }
     } catch (const Config::Exception& ce) {
         std::cerr << "Failed to parse config file: " << ce.what() << "\n";

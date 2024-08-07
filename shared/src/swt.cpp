@@ -59,6 +59,8 @@ std::string SwtOperation::getSuccessResponse() const {
             ss << std::hex << std::setw(8) << std::setfill('0') << address;
             ss << "........";
             break;
+        default:
+            break;
     }
 
     return ss.str();

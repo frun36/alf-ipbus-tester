@@ -37,6 +37,10 @@ struct SwtSequence {
 
     void addOperation(SwtOperation operation);
 
+    void clearOperations() {
+        operations.clear();
+    }
+
     std::string getRequest() const;
 
     std::string getSuccessResponse() const;

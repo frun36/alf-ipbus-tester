@@ -11,13 +11,15 @@ std::string TestConfig::help =
     " - randomise_operations [= false]\n"
     " - randomise_response [= false]\n"
     " - registers [required: array of u32s or regblocks { begin = u32, end = u32 }]\n"
-    " - operations [required: array of { type = str, data [= [0, 0]; array of u32] }]\n";
+    " - operations [required: array of { type = str, data [= [0, 0]; array of u32] }]\n"
+    " - split_seq [= false]";
 
 TestConfig::TestConfig(const toml::table& tbl) {
     name = tbl["name"].value_or<std::string>("No name");
     enabled = tbl["enabled"].value_or<bool>(true);
-    randomise_operations = tbl["randomise_operations"].value_or<bool>(false);
-    randomise_response = tbl["randomise_response"].value_or<bool>(false);
+    randomiseOperations = tbl["randomise_operations"].value_or<bool>(false);
+    randomiseResponse = tbl["randomise_response"].value_or<bool>(false);
+    splitSeq = tbl["split_seq"].value_or<bool>(false);
 
     if(!tbl["registers"].is_array())
         throw TestConfig::Exception("registers must be an array");
@@ -46,11 +48,13 @@ TestConfig::TestConfig(const toml::table& tbl) {
         }
     });
 
+    SwtSequence sequence;
     for (auto reg : registers) {
+
         if(!tbl["operations"].is_array())
             throw TestConfig::Exception("operations must be an array");
 
-        tbl["operations"].as_array()->for_each([this, reg](const auto& o) {
+        tbl["operations"].as_array()->for_each([this, reg, &sequence](const auto& o) {
             if(!o.is_table())
                 throw TestConfig::Exception("Invalid operations entry");
             
@@ -83,5 +87,13 @@ TestConfig::TestConfig(const toml::table& tbl) {
 
             sequence.addOperation(SwtOperation(type, reg, data0, data1));
         });
+
+        if (splitSeq) {
+            sequences.push_back(sequence);
+            sequence.clearOperations();
+        }
     }
+
+    if(!splitSeq)
+        sequences.push_back(sequence);
 }
