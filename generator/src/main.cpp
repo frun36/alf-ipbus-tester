@@ -41,7 +41,7 @@ int main(void) {
                 std::cout << "Received data:\n" << receivedData << std::endl;
 
                 isDataReceived = false;
-                std::cout << SwtSequence::match(seq.getSuccessResponse(), receivedData) << "\n";
+                std::cout << "\nResult: " << (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true) << "\n";
             }
 
         }

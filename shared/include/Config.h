@@ -22,6 +22,7 @@ struct Config {
 
     static Config readFile(std::string filename);
 
+
    private:
     Config(const toml::table& tbl);
 };

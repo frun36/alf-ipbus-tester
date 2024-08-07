@@ -28,4 +28,5 @@ struct TestConfig {
     TestConfig(const toml::table& tbl);
 
     void randomiseSequences(Rng& rng);
+    bool shouldSequenceSucceed(Rng& rng) const;
 };

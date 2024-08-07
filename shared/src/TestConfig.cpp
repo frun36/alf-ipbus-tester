@@ -108,3 +108,7 @@ void TestConfig::randomiseSequences(Rng& rng) {
         seq.operations = newOperations;
     }
 }
+
+bool TestConfig::shouldSequenceSucceed(Rng& rng) const {
+    return !(randomiseResponse && rng.randint(0, 4) == 0);
+}

@@ -9,13 +9,13 @@ rng_seed = 36                                   # Seed of the RNG used for seque
 [[tests]]
 name = "Read test"
 enabled = false                                 # Enables test
-randomise_response = true                       # Whether response from mock should be randomised *
 registers = [{ begin = 0x0, end = 0xf }, 0xff]  # Register block to test (start-end inclusively) + one register
 operations = [{ type = "read" }]                # List of operations to be performed on each register
 
 [[tests]]
 name = "Write test"
 enabled = true                                  # Enables test
+randomise_response = true                       # Whether response from mock should be randomised *
 randomise_operations = true                     # Whether order of operations should be randomised
 registers = [0x1, 0x2, 0x5]                     # List of registers to be tested
 operations = [                                  # List of operations to be performed
