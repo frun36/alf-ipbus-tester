@@ -1,12 +1,21 @@
 #pragma once
 
-#include "toml++/toml.hpp"
-#include "swt.h"
-
-#include <vector>
 #include <cstdint>
+#include <exception>
+#include <vector>
+
+#include "swt.h"
+#include "toml++/toml.hpp"
 
 struct TestConfig {
+    struct Exception : public std::runtime_error {
+        Exception(const std::string& msg)
+            : std::runtime_error(msg) {
+        }
+    };
+
+    static std::string help;
+
     std::string name;
     bool enabled;
     bool randomise_operations;

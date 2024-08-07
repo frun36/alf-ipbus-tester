@@ -1,18 +1,27 @@
 #pragma once
 
-#include "toml++/toml.hpp"
-#include "GlobalConfig.h"
-#include "TestConfig.h"
-
+#include <exception>
 #include <string>
 #include <vector>
 
-class Config {
-public:
+#include "GlobalConfig.h"
+#include "TestConfig.h"
+#include "toml++/toml.hpp"
+
+struct Config {
+    struct Exception : public std::runtime_error {
+        Exception(const std::string& msg)
+            : std::runtime_error(msg) {
+        }
+    };
+
+    static std::string help;
+
     GlobalConfig global;
     std::vector<TestConfig> tests;
 
-    Config(const toml::table& tbl);
-
     static Config readFile(std::string filename);
+
+   private:
+    Config(const toml::table& tbl);
 };
