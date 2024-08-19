@@ -14,7 +14,7 @@ operations = [{ type = "read" }]                # List of operations to be perfo
 
 [[tests]]
 name = "Write test"
-enabled = true                                  # Enables test
+enabled = false                                  # Enables test
 randomise_response = true                       # Whether response from mock should be randomised *
 randomise_operations = true                     # Whether order of operations should be randomised
 registers = [0x1, 0x2, 0x5]                     # List of registers to be tested
@@ -24,6 +24,13 @@ operations = [                                  # List of operations to be perfo
     { type = "rmw_bits", data = [0xfffff000, 0x00000001] },
 ]
 split_seq = true                                # Splits operations into separate sequences (by register)
+
+[[tests]]
+name = "Packet splitting test"
+registers = [{ begin = 0x0, end = 0xff }]
+operations = [
+    { type = "read" }
+]
 
 # Notes:
 # - options marked with '*' will be developed and clarified later (based on parsing library functionality)
