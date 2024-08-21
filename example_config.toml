@@ -3,7 +3,7 @@
 
 [global]
 name = "Example config"                         # Name to be displayed when running the test
-register_file = "build/ftm_registers.csv"       # File from which to read the register info
+register_file = "ftm_registers.csv"       # File from which to read the register info
 rng_seed = 36                                   # Seed of the RNG used for sequence randomisation
 
 [[tests]]
@@ -24,13 +24,25 @@ operations = [                                  # List of operations to be perfo
     { type = "rmw_bits", data = [0xfffff000, 0x00000001] },
 ]
 split_seq = true                                # Splits operations into separate sequences (by register)
+repeats = 100                                   # Repeats everything a specified number of times (1 by default)
+wait = 10000                                    # Wait time between test repeats (in us, 0 by default)
 
 [[tests]]
 name = "Packet splitting test"
+enabled = false
 registers = [{ begin = 0x0, end = 0xff }]
 operations = [
     { type = "read" }
 ]
+
+[[tests]]
+name = "Load test"
+registers = [0x1004]
+operations = [
+    { type = "read" }
+]
+repeats = 1000
+wait = 1000
 
 # Notes:
 # - options marked with '*' will be developed and clarified later (based on parsing library functionality)

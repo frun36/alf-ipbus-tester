@@ -28,21 +28,25 @@ int main(void) {
             
             std::cout << "Performing test \"" << test.name << "\"\n";
 
-            for(const auto& seq : test.sequences) {    
-                std::string seqStr = seq.getRequest();
+            for(size_t i = 0; i < test.repeats; i++) {
+                for(const auto& seq : test.sequences) {    
+                    std::string seqStr = seq.getRequest();
 
-                std::cout << "Sending data:\n" << seqStr << "\n\n";
-                DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seqStr.c_str());
+                    std::cout << "Sending data:\n" << seqStr << "\n\n";
+                    DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seqStr.c_str());
 
-                std::unique_lock<std::mutex> lock(mtx);
-                cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
+                    std::unique_lock<std::mutex> lock(mtx);
+                    cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
 
-                // Process the received data
-                std::cout << "Received data:\n" << receivedData << std::endl;
+                    // Process the received data
+                    std::cout << "Received data:\n" << receivedData << std::endl;
 
-                isDataReceived = false;
-                std::cout << "\nResult: " << (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true) << "\n";
+                    isDataReceived = false;
+                    std::cout << "\nResult: " << (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true) << "\n";
+                }
+                usleep(test.wait);
             }
+
 
         }
     } catch (const Config::Exception& ce) {

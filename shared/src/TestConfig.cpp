@@ -12,7 +12,9 @@ std::string TestConfig::help =
     " - randomise_response [= false]\n"
     " - registers [required: array of u32s or regblocks { begin = u32, end = u32 }]\n"
     " - operations [required: array of { type = str, data [= [0, 0]; array of u32] }]\n"
-    " - split_seq [= false]";
+    " - split_seq [= false]\n"
+    " - repeats [= 1]\n"
+    " - wait [= 0]";
 
 TestConfig::TestConfig(const toml::table& tbl) {
     name = tbl["name"].value_or<std::string>("No name");
@@ -20,6 +22,8 @@ TestConfig::TestConfig(const toml::table& tbl) {
     randomiseOperations = tbl["randomise_operations"].value_or<bool>(false);
     randomiseResponse = tbl["randomise_response"].value_or<bool>(false);
     splitSeq = tbl["split_seq"].value_or<bool>(false);
+    repeats = tbl["repeats"].value_or<unsigned>(1);
+    wait = tbl["wait"].value_or<unsigned>(0);
 
     if(!tbl["registers"].is_array())
         throw TestConfig::Exception("registers must be an array");

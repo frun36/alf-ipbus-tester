@@ -23,6 +23,9 @@ struct TestConfig {
     bool randomiseResponse;
     std::vector<uint32_t> registers;
     std::vector<SwtSequence> sequences;
+    unsigned repeats;
+    unsigned wait;
+
     bool splitSeq;
 
     TestConfig(const toml::table& tbl);
