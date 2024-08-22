@@ -20,7 +20,7 @@ std::vector<Register> Register::readMapFromFile(std::string filename) {
     std::vector<Register> registers;
 
     if (!inputFile.is_open()) {
-        std::cerr << "Failed to open file" << std::endl;
+        std::cerr << "Failed to open register file " << filename << '\n';
     }
 
     std::vector<std::string> lines;

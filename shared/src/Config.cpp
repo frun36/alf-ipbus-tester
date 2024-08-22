@@ -39,7 +39,7 @@ Config Config::readFile(std::string filename) {
 Config::Config(const toml::table& tbl) 
     : global(*tbl["global"].as_table()) {
     if(!tbl["tests"].is_array_of_tables())
-        throw Config::Exception("tests must be an array of tables");
+        throw Config::Exception("Tests must be an array of tables");
     
     const auto& testTables = *tbl["tests"].as_array();
 

@@ -2,14 +2,18 @@
 #include <iostream>
 #include <mutex>
 #include <condition_variable>
+#include <boost/log/trivial.hpp>
 
 #include "swt.h"
 #include "RpcInfo.h"
 #include "SequenceGenerator.h"
 #include "Register.h"
 #include "Config.h"
+#include "logging.h"
 
 int main(void) {
+    logging::init();
+
     std::mutex mtx;
     std::condition_variable cv;
     bool isDataReceived = false;
@@ -22,27 +26,31 @@ int main(void) {
 
         for(const auto& test : cfg.tests) {
             if(!test.enabled) {
-                std::cout << "Test \"" << test.name << "\" is disabled\n";
+                BOOST_LOG_TRIVIAL(warning) << "Test \"" << test.name << "\" is disabled";
                 continue;
             }
             
-            std::cout << "Performing test \"" << test.name << "\"\n";
+            BOOST_LOG_TRIVIAL(info) << "Performing test \"" << test.name << "\"";
 
             for(size_t i = 0; i < test.repeats; i++) {
                 for(const auto& seq : test.sequences) {    
                     std::string seqStr = seq.getRequest();
 
-                    std::cout << "Sending data:\n" << seqStr << "\n\n";
+                    BOOST_LOG_TRIVIAL(debug) << "Sending data:\n" << seqStr;
                     DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seqStr.c_str());
 
                     std::unique_lock<std::mutex> lock(mtx);
                     cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
 
                     // Process the received data
-                    std::cout << "Received data:\n" << receivedData << std::endl;
+                    BOOST_LOG_TRIVIAL(debug) << "Received data:\n" << receivedData << "\n";
 
                     isDataReceived = false;
-                    std::cout << "\nResult: " << (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true) << "\n";
+                    bool result = (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true);
+                    if (result)
+                        BOOST_LOG_TRIVIAL(info) << "Success";
+                    else
+                        BOOST_LOG_TRIVIAL(error) << "Failure";
                 }
                 usleep(test.wait);
             }
@@ -50,7 +58,7 @@ int main(void) {
 
         }
     } catch (const Config::Exception& ce) {
-        std::cerr << "Failed to parse config file: " << ce.what() << "\n";
+        BOOST_LOG_TRIVIAL(fatal) << "Failed to parse config file: " << ce.what();
         exit(1);
     }
 
