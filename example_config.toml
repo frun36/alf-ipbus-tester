@@ -37,12 +37,23 @@ operations = [
 
 [[tests]]
 name = "Load test"
+enabled = false
 registers = [0x1004]
 operations = [
     { type = "read" }
 ]
 repeats = 1000
 wait = 1000
+
+[[tests]]
+name = "Counting test"
+registers = [0x1004, 0x1005]
+operations = [
+    { type = "write", data = 0x0 },
+    { type = "rmw_bits", and = 0x0, or = 0xf },
+    { type = "read"}
+]
+split_seq = true
 
 # Notes:
 # - options marked with '*' are not yet developed
