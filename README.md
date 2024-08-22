@@ -11,7 +11,7 @@ make
 ## Running
 While still in the `build` directory, run
 ```
-bin/generator
+bin/generator -c example_config.toml [-f test.log]
 ```
 or
 ```

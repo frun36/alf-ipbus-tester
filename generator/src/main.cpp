@@ -10,9 +10,12 @@
 #include "Register.h"
 #include "Config.h"
 #include "logging.h"
+#include "GeneratorConfig.h"
 
-int main(void) {
-    logging::init();
+int main(int argc, const char** argv) {
+    GeneratorConfig genCfg(argc, argv);
+    
+    logging::init(genCfg.logFilename);
 
     std::mutex mtx;
     std::condition_variable cv;
@@ -22,7 +25,8 @@ int main(void) {
     RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
     try {
-        Config cfg = Config::readFile("../example_config.toml");
+
+        Config cfg = Config::readFile(genCfg.configFilename);
 
         for(const auto& test : cfg.tests) {
             if(!test.enabled) {

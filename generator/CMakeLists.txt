@@ -28,7 +28,7 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(generator ${SOURCES})
 
 # Link to the DIM library
-target_link_libraries(generator ${DIM_LIBRARY} pthread shared Boost::system Boost::log_setup Boost::log)
+target_link_libraries(generator ${DIM_LIBRARY} pthread shared Boost::system Boost::log_setup Boost::log Boost::program_options)
 
 # Specify the output directory for the generator executable
 set_target_properties(generator PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
