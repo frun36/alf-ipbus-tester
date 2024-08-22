@@ -38,7 +38,7 @@ std::string SwtOperation::getRequest() const {
     return ss.str();
 }
 
-std::string SwtOperation::getResponse() const {
+std::string SwtOperation::getSuccessResponse() const {
     std::stringstream ss;
     ss << "0";
     
@@ -58,6 +58,8 @@ std::string SwtOperation::getResponse() const {
             ss << "\n0x004";
             ss << std::hex << std::setw(8) << std::setfill('0') << address;
             ss << "........";
+            break;
+        default:
             break;
     }
 
@@ -80,11 +82,11 @@ void SwtSequence::addOperation(SwtOperation operation) {
     operations.emplace_back(operation);
 }
 
-std::string SwtSequence::getResponse() const {
+std::string SwtSequence::getSuccessResponse() const {
     std::string result = "success\n";
 
     for (const auto& op : operations) {
-        result += op.getResponse();
+        result += op.getSuccessResponse();
         result += "\n";
     }
 

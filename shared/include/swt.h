@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include <boost/log/trivial.hpp>
 
 struct SwtOperation {
     enum class Type {
@@ -25,29 +26,35 @@ struct SwtOperation {
     
     std::string getRequest() const;
 
-    std::string getResponse() const;
+    std::string getSuccessResponse() const;
 };
 
 struct SwtSequence {
     std::vector<SwtOperation> operations;
 
+    SwtSequence() = default;
+
     SwtSequence(std::initializer_list<SwtOperation> operations) : operations(operations) {}
 
     void addOperation(SwtOperation operation);
 
+    void clearOperations() {
+        operations.clear();
+    }
+
     std::string getRequest() const;
 
-    std::string getResponse() const;
+    std::string getSuccessResponse() const;
 
     static bool match(std::string expected, std::string response) {
         if(expected.size() != response.size()) {
-            std::cerr << "Response sizes don't match";
+            BOOST_LOG_TRIVIAL(error) << "Response sizes don't match";
             return false;
         }
 
         for(size_t i = 0; i < expected.size(); i++) {
-            if(expected[i] != response[i] && expected[i] != '.') {
-                std::cerr << "Unexpected character in response";
+            if(std::tolower(expected[i]) != std::tolower(response[i]) && expected[i] != '.') {
+                BOOST_LOG_TRIVIAL(error) << "Unexpected character in response: " << response[i];
                 return false;
             }
         }

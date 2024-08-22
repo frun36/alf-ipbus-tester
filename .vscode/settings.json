@@ -77,6 +77,12 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "*.ipp": "cpp",
+        "strstream": "cpp",
+        "forward_list": "cpp",
+        "regex": "cpp",
+        "cfenv": "cpp",
+        "valarray": "cpp"
     }
 }

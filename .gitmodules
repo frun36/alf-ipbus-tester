@@ -1,3 +1,6 @@
 [submodule "IPbus"]
 	path = IPbus
 	url = git@github.com:VictorPierozak/IPbus.git
+[submodule "tomlplusplus"]
+	path = tomlplusplus
+	url = https://github.com/marzer/tomlplusplus

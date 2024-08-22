@@ -2,12 +2,18 @@
 #include <iostream>
 #include <mutex>
 #include <condition_variable>
+#include <boost/log/trivial.hpp>
 
 #include "swt.h"
 #include "RpcInfo.h"
 #include "SequenceGenerator.h"
+#include "Register.h"
+#include "Config.h"
+#include "logging.h"
 
 int main(void) {
+    logging::init();
+
     std::mutex mtx;
     std::condition_variable cv;
     bool isDataReceived = false;
@@ -15,50 +21,46 @@ int main(void) {
 
     RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
-    SwtSequence s = {
-        SwtOperation(SwtOperation::Type::Write, 0x100f, 0xc0ffee),
-        // SwtOperation(SwtOperation::Type::RmwBits, 0x1004, 0xffffffff, 0x04),
-        // SwtOperation(SwtOperation::Type::RmwSum, 0x1004, 0xffffffff),
-        // SwtOperation(SwtOperation::Type::Read, 0x104),
-        // SwtOperation(SwtOperation::Type::Write, 0x1004),
-    };
+    try {
+        Config cfg = Config::readFile("../example_config.toml");
 
-    // SequenceGenerator gen;
-    // SwtSequence s = gen.generateRandom(10);
-    
-    
-    std::cout << "Request:\n" << s.getRequest() << "\nExpected response:\n" << s.getResponse() << "\n";
+        for(const auto& test : cfg.tests) {
+            if(!test.enabled) {
+                BOOST_LOG_TRIVIAL(warning) << "Test \"" << test.name << "\" is disabled";
+                continue;
+            }
+            
+            BOOST_LOG_TRIVIAL(info) << "Performing test \"" << test.name << "\"";
 
-    std::string seq = s.getRequest();
+            for(size_t i = 0; i < test.repeats; i++) {
+                for(const auto& seq : test.sequences) {    
+                    std::string seqStr = seq.getRequest();
 
-    DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seq.c_str());
+                    BOOST_LOG_TRIVIAL(debug) << "Sending data:\n" << seqStr;
+                    DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seqStr.c_str());
 
-    // while(true) {
-        // std::string sequence = "";
-        // std::cout << "Input SWT sequence:\nBEGIN\n";
-        // std::string line = "";
-        // std::getline(std::cin, line);
-        // while (line != "END") {
-        //     sequence += line + "\n";
-        //     std::getline(std::cin, line);
-        // }
+                    std::unique_lock<std::mutex> lock(mtx);
+                    cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
 
-        // if (sequence.back() == '\n') sequence.pop_back();
+                    // Process the received data
+                    BOOST_LOG_TRIVIAL(debug) << "Received data:\n" << receivedData << "\n";
 
-        // DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", sequence.c_str());
+                    isDataReceived = false;
+                    bool result = (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true);
+                    if (result)
+                        BOOST_LOG_TRIVIAL(info) << "Success";
+                    else
+                        BOOST_LOG_TRIVIAL(error) << "Failure";
+                }
+                usleep(test.wait);
+            }
 
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
 
-        // Process the received data
-        std::cout << "Received data:\n" << receivedData << std::endl;
-
-        // Reset the flag
-        isDataReceived = false;
-
-        std::cout << SwtSequence::match(s.getResponse(), receivedData) << "\n";
-    // }
-
+        }
+    } catch (const Config::Exception& ce) {
+        BOOST_LOG_TRIVIAL(fatal) << "Failed to parse config file: " << ce.what();
+        exit(1);
+    }
 
     return 0;
 }
