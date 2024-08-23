@@ -16,7 +16,7 @@ std::string TestConfig::help =
     " - repeats [= 1]\n"
     " - wait [= 0]";
 
-TestConfig::TestConfig(const toml::table& tbl) {
+TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
     name = tbl["name"].value_or<std::string>("No name");
     enabled = tbl["enabled"].value_or<bool>(true);
     randomiseOperations = tbl["randomise_operations"].value_or<bool>(false);
@@ -100,6 +100,8 @@ TestConfig::TestConfig(const toml::table& tbl) {
 
     if(!splitSeq)
         sequences.push_back(sequence);
+
+    singleIPbusPayloadWords = sequences[0].getIPbusPayloadWords();
 }
 
 void TestConfig::randomiseSequences(Rng& rng) {

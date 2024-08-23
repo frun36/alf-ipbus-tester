@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/IPbus/inc)
 include_directories(${PROJECT_SOURCE_DIR}/shared/include)
+include_directories(${PROJECT_SOURCE_DIR}/tomlplusplus/include)
 
 # Add the source files
 file(GLOB SOURCES "src/*.cpp")
