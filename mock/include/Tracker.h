@@ -25,4 +25,11 @@ struct Tracker {
     Status registerPacket(size_t words);
 
     Status moveForwards();
+
+    void reset() {
+        currTest = 0;
+        currTestRegister = 0;
+        currTestRepeat = 0;
+        remaining = 0;
+    }
 };

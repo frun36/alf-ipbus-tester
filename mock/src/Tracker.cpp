@@ -41,8 +41,8 @@ Tracker::Status Tracker::moveForwards() {
         } while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled);
 
         if (currTest >= cfg.tests.size()) {
-            BOOST_LOG_TRIVIAL(trace) << "All tests performed";
-            currTest = 0;
+            BOOST_LOG_TRIVIAL(trace) << "All tests performed, resetting tracker";
+            reset();
             return Status::Finished;
         }
     }
