@@ -34,4 +34,8 @@ public:
     size_t getSize() const {
         return cfg.global.registerMap.size();
     }
+
+    bool getCurrResponse() const {
+        return cfg.tests[trk.currTest].sequenceResponses[trk.seqId];
+    }
 };

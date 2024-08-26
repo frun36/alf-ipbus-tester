@@ -15,6 +15,9 @@ bool Mock::verifyRegisterBlockWrite(uint32_t address, size_t words) const {
 }
 
 bool Mock::dataRead(uint32_t address, size_t words, uint32_t* out) const {
+    if(!getCurrResponse())
+        return false;
+
     if (!verifyRegisterBlockRead(address, words))
         return false;
 
@@ -25,6 +28,9 @@ bool Mock::dataRead(uint32_t address, size_t words, uint32_t* out) const {
 }
 
 bool Mock::dataWrite(uint32_t address, size_t words, const uint32_t* in) {
+    if(!getCurrResponse())
+        return false;
+
     if (!verifyRegisterBlockWrite(address, words))
         return false;
 
