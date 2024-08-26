@@ -25,6 +25,7 @@ struct TestConfig {
     std::vector<SwtSequence> sequences;
     unsigned repeats;
     unsigned wait;
+    size_t singleIPbusPayloadWords;
 
     bool splitSeq;
 

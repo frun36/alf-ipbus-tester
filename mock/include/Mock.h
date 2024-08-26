@@ -8,15 +8,16 @@
 
 #include "Memory.h"
 #include "Register.h"
+#include "Tracker.h"
+#include "Config.h"
 
 class Mock : public ipbus::Memory {
 private:
-    size_t m_size;
-    std::vector<Register> m_registers;
+    Config m_cfg;
 public:
-    Mock(size_t size) : m_size(size), m_registers(size) {}
+    Tracker trk;
 
-    Mock(std::string filename);
+    Mock(const Config&& cfg) : m_cfg(cfg), trk(m_cfg) {}
 
     bool verifyRegisterBlockRead(uint32_t address, size_t words) const;
 
@@ -31,6 +32,6 @@ public:
     void unlock() override { }
 
     size_t getSize() const {
-        return m_size;
+        return m_cfg.global.registerMap.size();
     }
 };

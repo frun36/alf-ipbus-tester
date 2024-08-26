@@ -8,7 +8,7 @@ rng_seed = 36                                   # Seed of the RNG used for seque
 
 [[tests]]
 name = "Read test"
-enabled = false                                 # Enables test
+enabled = true                                 # Enables test
 registers = [{ begin = 0x0, end = 0xf }, 0xff]  # Register block to test (start-end inclusively) + one register
 operations = [{ type = "read" }]                # List of operations to be performed on each register
 
@@ -29,7 +29,7 @@ wait = 10000                                    # Wait time between test repeats
 
 [[tests]]
 name = "Packet splitting test"
-enabled = false
+enabled = true
 registers = [{ begin = 0x0, end = 0xff }]
 operations = [
     { type = "read" }
@@ -37,12 +37,26 @@ operations = [
 
 [[tests]]
 name = "Load test"
-registers = [0x1004]
+enabled = false
+registers = [0x1004, 0x1005, 0x1006]
 operations = [
     { type = "read" }
 ]
-repeats = 1000
+repeats = 10
 wait = 1000
+
+[[tests]]
+name = "Counting test"
+enabled = false
+registers = [0x1004, 0x1005]
+operations = [
+    { type = "write", data = 0x0 },
+    { type = "rmw_bits", and = 0x0, or = 0xf },
+    { type = "rmw_sum", sum = 0x1 },
+    { type = "read"}
+]
+split_seq = true
+repeats = 2
 
 # Notes:
 # - options marked with '*' are not yet developed
