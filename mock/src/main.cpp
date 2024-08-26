@@ -26,10 +26,18 @@ int main(void) {
         if(req.isStatusRequest()) {
             BOOST_LOG_TRIVIAL(info) << "Status packet received";
         } else {
-            if(trk.registerPacket(req.getSize()))
-                BOOST_LOG_TRIVIAL(debug) << "Test id: " << trk.currTest << " register id: " << trk.currTestRegister << " repeat: " << trk.currTestRepeat;
-            else
-                BOOST_LOG_TRIVIAL(warning) << "Tracking failed";
+            switch(trk.registerPacket(req.getSize())) {
+                case Tracker::Status::Ok:
+                case Tracker::Status::Split:
+                    BOOST_LOG_TRIVIAL(debug) << "Test id: " << trk.currTest << " register id: " << trk.currTestRegister << " repeat: " << trk.currTestRepeat;
+                    break;
+                case Tracker::Status::Error:
+                    BOOST_LOG_TRIVIAL(warning) << "Tracking failed";
+                    break;
+                case Tracker::Status::Finished:
+                    BOOST_LOG_TRIVIAL(info) << "All tests performed";
+                    break;
+            }
         }
     });
 
