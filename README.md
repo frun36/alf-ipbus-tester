@@ -15,5 +15,5 @@ bin/generator -c ../example_config.toml [-f test.log]
 ```
 or
 ```
-bin/mock
+bin/mock -c ../example_config.toml [-f test.log]
 ```
