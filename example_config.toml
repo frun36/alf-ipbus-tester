@@ -37,13 +37,14 @@ operations = [
 
 [[tests]]
 name = "Load test"
-enabled = false
+enabled = true
 registers = [0x1004, 0x1005, 0x1006]
 operations = [
     { type = "read" }
 ]
 repeats = 10
-wait = 1000
+wait = 100
+randomise_response = true
 
 [[tests]]
 name = "Counting test"

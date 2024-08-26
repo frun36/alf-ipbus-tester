@@ -10,6 +10,7 @@ Tracker::Status Tracker::registerPacket(size_t words) {
     BOOST_LOG_TRIVIAL(trace) << "Received words: " << words << "/" << expectedSize;
 
     if (words == expectedSize) {
+        remaining = 0;
         return moveForwards();
     } else if (words < expectedSize) {
         remaining = expectedSize - words;
@@ -21,6 +22,8 @@ Tracker::Status Tracker::registerPacket(size_t words) {
 }
 
 Tracker::Status Tracker::moveForwards() {
+    seqId++;
+
     if (cfg.tests[currTest].splitSeq) {
         currTestRegister++;
         if(currTestRegister >= cfg.tests[currTest].registers.size()) {
@@ -39,6 +42,7 @@ Tracker::Status Tracker::moveForwards() {
         do {
             currTest++;
         } while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled);
+        seqId = 0;
 
         if (currTest >= cfg.tests.size()) {
             BOOST_LOG_TRIVIAL(trace) << "All tests performed, resetting tracker";

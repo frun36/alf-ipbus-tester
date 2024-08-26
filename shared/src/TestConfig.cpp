@@ -102,6 +102,11 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
         sequences.push_back(sequence);
 
     singleIPbusPayloadWords = sequences[0].getIPbusPayloadWords();
+
+    sequenceResponses.resize(sequences.size() * repeats);
+
+    for(size_t i = 0; i < sequenceResponses.size(); i++)
+        sequenceResponses[i] = true;
 }
 
 void TestConfig::randomiseSequences(Rng& rng) {
@@ -115,6 +120,7 @@ void TestConfig::randomiseSequences(Rng& rng) {
     }
 }
 
-bool TestConfig::shouldSequenceSucceed(Rng& rng) const {
-    return !(randomiseResponse && rng.randint(0, 4) == 0);
+void TestConfig::randomiseResponses(Rng& rng) {
+    for(size_t i = 0; i < sequenceResponses.size(); i++)
+        sequenceResponses[i] = (rng.randint(0, 4) != 0);
 }

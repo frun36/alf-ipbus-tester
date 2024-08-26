@@ -30,7 +30,7 @@ int main(int argc, const char **argv) {
             switch(mock.trk.registerPacket(req.getSize())) {
                 case Tracker::Status::Ok:
                 case Tracker::Status::Split:
-                    BOOST_LOG_TRIVIAL(debug) << "Test id: " << mock.trk.currTest << " register id: " << mock.trk.currTestRegister << " repeat: " << mock.trk.currTestRepeat;
+                    BOOST_LOG_TRIVIAL(debug) << "Test id: " << mock.trk.currTest << " register id: " << mock.trk.currTestRegister << " repeat: " << mock.trk.currTestRepeat << " (seq ID " << mock.trk.seqId << ", result: " << mock.cfg.tests[mock.trk.currTest].sequenceResponses[mock.trk.seqId] << ")";
                     break;
                 case Tracker::Status::Error:
                     BOOST_LOG_TRIVIAL(warning) << "Tracking failed";

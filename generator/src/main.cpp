@@ -50,7 +50,7 @@ int main(int argc, const char** argv) {
                     BOOST_LOG_TRIVIAL(debug) << "Received data:\n" << receivedData << "\n";
 
                     isDataReceived = false;
-                    bool result = (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true);
+                    bool result = SwtSequence::match(seq.getSuccessResponse(), receivedData);
                     if (result)
                         BOOST_LOG_TRIVIAL(info) << "Success";
                     else
