@@ -4,15 +4,18 @@
 #include "logging.h"
 #include "Config.h"
 #include "Tracker.h"
+#include "MockConfig.h"
 
 #include <boost/asio.hpp>
 #include <boost/log/trivial.hpp>
 
 
-int main(void) {
-    logging::init();
+int main(int argc, const char **argv) {
+    MockConfig mockCfg(argc, argv);
+    
+    logging::init(mockCfg.logFilename);
 
-    Config cfg = Config::readFile("../example_config.toml");
+    Config cfg = Config::readFile(mockCfg.configFilename);
 
     boost::asio::io_context io;
     Mock mock(std::move(cfg));
