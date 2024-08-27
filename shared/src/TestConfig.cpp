@@ -111,12 +111,9 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
 
 void TestConfig::randomiseSequences(Rng& rng) {
     for(auto& seq : sequences) {
-        size_t length = seq.operations.size();
-        std::vector<SwtOperation> newOperations;
-        for(size_t i = 0; i < length; i++)
-            newOperations.push_back(seq.operations[rng.randint(0, length - 1)]);
-        
-        seq.operations = newOperations;
+        size_t n = seq.operations.size();
+        for(size_t i = 0; i < n; i++)
+            std::swap(seq.operations[i], seq.operations[rng.randint(0, n - 1)]);
     }
 }
 

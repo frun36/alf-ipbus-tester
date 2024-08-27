@@ -6,58 +6,50 @@ name = "Example config"                         # Name to be displayed when runn
 register_file = "ftm_registers.csv"             # File from which to read the register info
 rng_seed = 36                                   # Seed of the RNG used for sequence randomisation
 
-[[tests]]
-name = "Read test"
-enabled = true                                 # Enables test
-registers = [{ begin = 0x0, end = 0xf }, 0xff]  # Register block to test (start-end inclusively) + one register
-operations = [{ type = "read" }]                # List of operations to be performed on each register
+# [[tests]]
+# name = "Read test"
+# enabled = true                                 # Enables test
+# registers = [{ begin = 0x0, end = 0xf }, 0xff]  # Register block to test (start-end inclusively) + one register
+# operations = [{ type = "read" }]                # List of operations to be performed on each register
+# repeats = 10
 
-[[tests]]
-name = "Write test"
-enabled = false                                 # Enables test
-randomise_response = true                       # Whether response from mock should be randomised *
-randomise_operations = true                     # Whether order of operations should be randomised
-registers = [0x1, 0x2, 0x5]                     # List of registers to be tested
-operations = [                                  # List of operations to be performed
-    { type = "read" },
-    { type = "write", data = [0xdeadbeef] },
-    { type = "rmw_bits", data = [0xfffff000, 0x00000001] },
-]
-split_seq = true                                # Splits operations into separate sequences (by register)
-repeats = 100                                   # Repeats everything a specified number of times (1 by default)
-wait = 10000                                    # Wait time between test repeats (in us, 0 by default)
+# [[tests]]
+# name = "Write test"
+# enabled = true                                  # Enables test
+# randomise_response = true                       # Whether response from mock should be randomised *
+# randomise_operations = true                     # Whether order of operations should be randomised
+# registers = [0x1, 0x2, 0x5]                     # List of registers to be tested
+# operations = [                                  # List of operations to be performed
+#     { type = "read" },
+#     { type = "write", data = [0xdeadbeef] },
+#     { type = "rmw_bits", data = [0xfffff000, 0x00000001] },
+# ]
+# split_seq = true                                # Splits operations into separate sequences (by register)
+# repeats = 100                                   # Repeats everything a specified number of times (1 by default)
+# wait = 10000                                    # Wait time between test repeats (in us, 0 by default)
 
-[[tests]]
-name = "Packet splitting test"
-enabled = true
-registers = [{ begin = 0x0, end = 0xff }]
-operations = [
-    { type = "read" }
-]
+# [[tests]]
+# name = "Packet splitting test"
+# enabled = true
+# registers = [{ begin = 0x0, end = 0xff }]
+# operations = [
+#     { type = "read" }
+# ]
+# repeats = 2
+# randomise_response = true
 
 [[tests]]
 name = "Load test"
 enabled = true
-registers = [0x1004, 0x1005, 0x1006]
+registers = [{begin = 0x0, end = 0xf}]
 operations = [
-    { type = "read" }
-]
-repeats = 10
-wait = 100
-randomise_response = true
-
-[[tests]]
-name = "Counting test"
-enabled = false
-registers = [0x1004, 0x1005]
-operations = [
-    { type = "write", data = 0x0 },
-    { type = "rmw_bits", and = 0x0, or = 0xf },
-    { type = "rmw_sum", sum = 0x1 },
-    { type = "read"}
+    { type = "rmw_bits", data = [0xdead, 0xbeef] }
 ]
 split_seq = true
-repeats = 2
+repeats = 10
+wait = 100
+randomise_operations = true
+randomise_response = true
 
 # Notes:
 # - options marked with '*' are not yet developed

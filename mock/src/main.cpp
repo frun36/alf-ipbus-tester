@@ -20,17 +20,15 @@ int main(int argc, const char **argv) {
     boost::asio::io_context io;
     Mock mock(std::move(cfg));
     ipbus::IPbusSlave slave(io, mock, 50001);
-
-    BOOST_LOG_TRIVIAL(debug) << "Test id: " << mock.trk.currTest << " register id: " << mock.trk.currTestRegister << " repeat: " << mock.trk.currTestRepeat;
     
     slave.setRequestCallback([&mock](const ipbus::IPbusRequest& req) {
+        BOOST_LOG_TRIVIAL(debug) << "Test id: " << mock.trk.currTest << " register id: " << mock.trk.currTestRegister << " repeat: " << mock.trk.currTestRepeat << " (seq ID " << mock.trk.seqId << ", result: " << mock.cfg.tests[mock.trk.currTest].sequenceResponses[mock.trk.seqId] << ")";
         if(req.isStatusRequest()) {
             BOOST_LOG_TRIVIAL(info) << "Status packet received";
         } else {
-            switch(mock.trk.registerPacket(req.getSize())) {
+            switch(mock.trk.registerPacket(req.getSize(), mock.getCurrResponse())) {
                 case Tracker::Status::Ok:
                 case Tracker::Status::Split:
-                    BOOST_LOG_TRIVIAL(debug) << "Test id: " << mock.trk.currTest << " register id: " << mock.trk.currTestRegister << " repeat: " << mock.trk.currTestRepeat << " (seq ID " << mock.trk.seqId << ", result: " << mock.cfg.tests[mock.trk.currTest].sequenceResponses[mock.trk.seqId] << ")";
                     break;
                 case Tracker::Status::Error:
                     BOOST_LOG_TRIVIAL(warning) << "Tracking failed";

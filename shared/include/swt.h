@@ -73,13 +73,13 @@ struct SwtSequence {
 
     static bool match(std::string expected, std::string response) {
         if (expected.size() != response.size()) {
-            BOOST_LOG_TRIVIAL(error) << "Response sizes don't match";
+            // BOOST_LOG_TRIVIAL(error) << "Response sizes don't match";
             return false;
         }
 
         for (size_t i = 0; i < expected.size(); i++) {
             if (std::tolower(expected[i]) != std::tolower(response[i]) && expected[i] != '.') {
-                BOOST_LOG_TRIVIAL(error) << "Unexpected character in response: " << response[i];
+                // BOOST_LOG_TRIVIAL(error) << "Unexpected character in response: " << response[i];
                 return false;
             }
         }
