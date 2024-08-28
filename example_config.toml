@@ -2,9 +2,10 @@
 # with existing parsing libraries for e.g. C++ 
 
 [global]
-name = "Example config"                         # Name to be displayed when running the test
-register_file = "ftm_registers.csv"             # File from which to read the register info
-rng_seed = 36                                   # Seed of the RNG used for sequence randomisation
+name = "Example config"                          # Name to be displayed when running the test
+register_file = "ftm_registers.csv"              # File from which to read the register info
+rng_seed = 36                                    # Seed of the RNG used for sequence randomisation
+alf = { name = "ALF_FTM", serial = 0, link = 0 } # Parameters of tested ALF
 
 [[tests]]
 name = "Read test"

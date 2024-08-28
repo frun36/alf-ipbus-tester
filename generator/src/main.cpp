@@ -27,6 +27,8 @@ int main(int argc, const char** argv) {
     try {
         Config cfg = Config::readFile(genCfg.configFilename);
 
+        std::string rpcInName =  cfg.global.alf.toString() + "/RpcIn";
+
         for(const auto& test : cfg.tests) {
             size_t seqId = 0;
 
@@ -42,7 +44,7 @@ int main(int argc, const char** argv) {
                     std::string seqStr = seq.getRequest();
 
                     BOOST_LOG_TRIVIAL(debug) << "Sending data:\n" << seqStr;
-                    DimClient::sendCommand("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcIn", seqStr.c_str());
+                    DimClient::sendCommand(rpcInName.c_str(), seqStr.c_str());
 
                     std::unique_lock<std::mutex> lock(mtx);
                     cv.wait(lock, [&isDataReceived]{ return isDataReceived; });
