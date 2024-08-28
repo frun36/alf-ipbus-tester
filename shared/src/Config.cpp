@@ -21,6 +21,7 @@ Config Config::readFile(std::string filename) {
     try {
         Config c(*tbl.as_table());
         c.global.registerFile = filename.substr(0, filename.find_last_of("/") + 1) + c.global.registerFile;
+        c.global.initRegisterMap();
         return c;
     } catch (const GlobalConfig::Exception& ge) {
         std::cerr << "Global config parsing exception: " << ge.what() << ".\n" << GlobalConfig::help << "\n";

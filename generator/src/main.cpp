@@ -27,6 +27,8 @@ int main(int argc, const char** argv) {
     try {
         Config cfg = Config::readFile(genCfg.configFilename);
 
+        BOOST_LOG_TRIVIAL(info) << "Running generator for test suite \"" << cfg.global.name << "\"";
+
         std::string rpcInName =  cfg.global.alf.toString() + "/RpcIn";
 
         for(const auto& test : cfg.tests) {

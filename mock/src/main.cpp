@@ -17,6 +17,8 @@ int main(int argc, const char **argv) {
 
     Config cfg = Config::readFile(mockCfg.configFilename);
 
+    BOOST_LOG_TRIVIAL(info) << "Running mock for test suite \"" << cfg.global.name << "\"";
+
     boost::asio::io_context io;
     Mock mock(std::move(cfg));
     ipbus::IPbusSlave slave(io, mock, 50001);

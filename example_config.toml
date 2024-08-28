@@ -3,9 +3,9 @@
 
 [global]
 name = "Example config"
-register_file = "ftm_registers.csv"                 # File from which to read the register map - info for mock as to which registers support read/write operations
+register_file = "build/ftm_registers.csv"           # File from which to read the mock register map (relative to config file path)
 rng_seed = 36                                       # Seed of the RNG used for sequence randomisation (1 by default)
-alf = { name = "ALF_FTM", serial = 0, link = 0 }    # Parameters of tested ALF
+alf = { name = "ALF_MOCK", serial = 0, link = 0 }   # Parameters of tested ALF
 
 [[tests]]
 name = "Write test"
@@ -24,7 +24,7 @@ randomise_response = true                           # Whether response from mock
 randomise_operations = true                         # Whether order of operations should be randomised (false by default)
 split_seq = true                                    # Whether operations for different registers should be in separate sequences (false by default)
 repeats = 100                                       # Repeats the test a specified number of times (1 by default)
-wait = 10000                                        # Wait time between test repeats (in us, 0 by default)
+wait = 10000                                        # Wait time after each test repeat (in us, 0 by default)
 
 # Notes:
 # - same type of RNG is used for `mock` and `generator`, for predictable results and synchronisation

@@ -38,4 +38,8 @@ struct GlobalConfig {
     Alf alf;
 
     GlobalConfig(const toml::table& tbl);
+
+    void initRegisterMap() {
+        registerMap = Register::readMapFromFile(registerFile);
+    }
 };
