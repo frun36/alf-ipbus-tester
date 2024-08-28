@@ -11,14 +11,12 @@
 #include <iomanip>
 #include <sstream>
 
-#define DEBUG
-
 namespace logging
 {
 namespace bl = boost::log;
 namespace ble = boost::log::expressions;
 
-void init(std::string filename = "")
+void init(std::string filename = "", bool verbose = false)
 {
   bl::add_common_attributes();
 
@@ -41,10 +39,9 @@ void init(std::string filename = "")
                                              << ble::smessage));
   }
 
-#ifndef DEBUG
-  bl::core::get()->set_filter(
-    bl::trivial::severity >= bl::trivial::info);
-#endif
-  BOOST_LOG_TRIVIAL(debug) << "Debug log mode enabled";
+  if(!verbose)
+    bl::core::get()->set_filter(bl::trivial::severity >= bl::trivial::info);
+
+  BOOST_LOG_TRIVIAL(debug) << "Verbose log mode enabled";
 }
 } // namespace logging

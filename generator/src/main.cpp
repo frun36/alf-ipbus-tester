@@ -15,7 +15,7 @@
 int main(int argc, const char** argv) {
     GeneratorConfig genCfg(argc, argv);
     
-    logging::init(genCfg.logFilename);
+    logging::init(genCfg.logFilename, genCfg.verbose);
 
     std::mutex mtx;
     std::condition_variable cv;
@@ -55,13 +55,14 @@ int main(int argc, const char** argv) {
                     isDataReceived = false;
                     bool result = SwtSequence::match(seq.getSuccessResponse(), receivedData);
                     if (result == test.sequenceResponses[seqId])
-                        BOOST_LOG_TRIVIAL(info) << "Success";
+                        BOOST_LOG_TRIVIAL(debug) << test.name << ": success (repeat " << i << ", seqId " << seqId << ")";
                     else {
-                        BOOST_LOG_TRIVIAL(error) << "Failure (seqId = " << seqId << ", expected " << test.sequenceResponses[seqId] << ")";
+                        BOOST_LOG_TRIVIAL(error) << test.name << ": failure (repeat " << i << ", seqId " << seqId << ", expected " << test.sequenceResponses[seqId] << ")\n--- Sent ---\n" << seqStr << "\n--- Received ---\n" << receivedData;
                         exit(1);
                     }
                     seqId++;
                 }
+                BOOST_LOG_TRIVIAL(info) << test.name << ": success " << i+1 << "/" << test.repeats;
                 usleep(test.wait);
             }
         }
