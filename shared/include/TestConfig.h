@@ -23,6 +23,7 @@ struct TestConfig {
     bool randomiseResponse;
     std::vector<uint32_t> registers;
     std::vector<SwtSequence> sequences;
+    std::vector<bool> sequenceResponses;
     unsigned repeats;
     unsigned wait;
     size_t singleIPbusPayloadWords;
@@ -32,5 +33,5 @@ struct TestConfig {
     TestConfig(const toml::table& tbl);
 
     void randomiseSequences(Rng& rng);
-    bool shouldSequenceSucceed(Rng& rng) const;
+    void randomiseResponses(Rng& rng);
 };

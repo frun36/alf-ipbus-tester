@@ -25,10 +25,11 @@ int main(int argc, const char** argv) {
     RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
     try {
-
         Config cfg = Config::readFile(genCfg.configFilename);
 
         for(const auto& test : cfg.tests) {
+            size_t seqId = 0;
+
             if(!test.enabled) {
                 BOOST_LOG_TRIVIAL(warning) << "Test \"" << test.name << "\" is disabled";
                 continue;
@@ -50,16 +51,17 @@ int main(int argc, const char** argv) {
                     BOOST_LOG_TRIVIAL(debug) << "Received data:\n" << receivedData << "\n";
 
                     isDataReceived = false;
-                    bool result = (test.shouldSequenceSucceed(cfg.global.rng) ? SwtSequence::match(seq.getSuccessResponse(), receivedData) : true);
-                    if (result)
+                    bool result = SwtSequence::match(seq.getSuccessResponse(), receivedData);
+                    if (result == test.sequenceResponses[seqId])
                         BOOST_LOG_TRIVIAL(info) << "Success";
-                    else
-                        BOOST_LOG_TRIVIAL(error) << "Failure";
+                    else {
+                        BOOST_LOG_TRIVIAL(error) << "Failure (seqId = " << seqId << ", expected " << test.sequenceResponses[seqId] << ")";
+                        exit(1);
+                    }
+                    seqId++;
                 }
                 usleep(test.wait);
             }
-
-
         }
     } catch (const Config::Exception& ce) {
         BOOST_LOG_TRIVIAL(fatal) << "Failed to parse config file: " << ce.what();

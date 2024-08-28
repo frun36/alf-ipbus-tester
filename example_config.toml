@@ -11,10 +11,11 @@ name = "Read test"
 enabled = true                                 # Enables test
 registers = [{ begin = 0x0, end = 0xf }, 0xff]  # Register block to test (start-end inclusively) + one register
 operations = [{ type = "read" }]                # List of operations to be performed on each register
+repeats = 10
 
 [[tests]]
 name = "Write test"
-enabled = false                                 # Enables test
+enabled = true                                  # Enables test
 randomise_response = true                       # Whether response from mock should be randomised *
 randomise_operations = true                     # Whether order of operations should be randomised
 registers = [0x1, 0x2, 0x5]                     # List of registers to be tested
@@ -34,29 +35,21 @@ registers = [{ begin = 0x0, end = 0xff }]
 operations = [
     { type = "read" }
 ]
+repeats = 2
+randomise_response = true
 
 [[tests]]
 name = "Load test"
-enabled = false
-registers = [0x1004, 0x1005, 0x1006]
+enabled = true
+registers = [{begin = 0x0, end = 0x9}]
 operations = [
-    { type = "read" }
-]
-repeats = 10
-wait = 1000
-
-[[tests]]
-name = "Counting test"
-enabled = false
-registers = [0x1004, 0x1005]
-operations = [
-    { type = "write", data = 0x0 },
-    { type = "rmw_bits", and = 0x0, or = 0xf },
-    { type = "rmw_sum", sum = 0x1 },
-    { type = "read"}
+    { type = "rmw_bits", data = [0xdead, 0xbeef] }
 ]
 split_seq = true
-repeats = 2
+repeats = 10
+wait = 100
+randomise_operations = true
+randomise_response = true
 
 # Notes:
 # - options marked with '*' are not yet developed

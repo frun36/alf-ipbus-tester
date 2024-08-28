@@ -13,11 +13,11 @@
 
 class Mock : public ipbus::Memory {
 private:
-    Config m_cfg;
 public:
+    Config cfg;
     Tracker trk;
 
-    Mock(const Config&& cfg) : m_cfg(cfg), trk(m_cfg) {}
+    Mock(const Config&& cfg) : cfg(cfg), trk(cfg) {}
 
     bool verifyRegisterBlockRead(uint32_t address, size_t words) const;
 
@@ -32,6 +32,10 @@ public:
     void unlock() override { }
 
     size_t getSize() const {
-        return m_cfg.global.registerMap.size();
+        return cfg.global.registerMap.size();
+    }
+
+    bool getCurrResponse() const {
+        return cfg.tests[trk.currTest].sequenceResponses[trk.seqId];
     }
 };

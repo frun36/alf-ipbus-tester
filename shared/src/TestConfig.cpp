@@ -28,7 +28,6 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
     if(!tbl["registers"].is_array())
         throw TestConfig::Exception("registers must be an array");
 
-    // ToDo: handle invalid arguments!
     tbl["registers"].as_array()->for_each([this](auto& r) {
         if (r.is_table()) {
             const toml::table& t = *r.as_table();
@@ -102,19 +101,22 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
         sequences.push_back(sequence);
 
     singleIPbusPayloadWords = sequences[0].getIPbusPayloadWords();
+
+    sequenceResponses.resize(sequences.size() * repeats);
+
+    for(size_t i = 0; i < sequenceResponses.size(); i++)
+        sequenceResponses[i] = true;
 }
 
 void TestConfig::randomiseSequences(Rng& rng) {
     for(auto& seq : sequences) {
-        size_t length = seq.operations.size();
-        std::vector<SwtOperation> newOperations;
-        for(size_t i = 0; i < length; i++)
-            newOperations.push_back(seq.operations[rng.randint(0, length - 1)]);
-        
-        seq.operations = newOperations;
+        size_t n = seq.operations.size();
+        for(size_t i = 0; i < n; i++)
+            std::swap(seq.operations[i], seq.operations[rng.randint(0, n - 1)]);
     }
 }
 
-bool TestConfig::shouldSequenceSucceed(Rng& rng) const {
-    return !(randomiseResponse && rng.randint(0, 4) == 0);
+void TestConfig::randomiseResponses(Rng& rng) {
+    for(size_t i = 0; i < sequenceResponses.size(); i++)
+        sequenceResponses[i] = (rng.randint(0, 4) != 0);
 }
