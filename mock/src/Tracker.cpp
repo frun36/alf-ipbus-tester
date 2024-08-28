@@ -1,6 +1,8 @@
 #include "Tracker.h"
 
 Tracker::Status Tracker::registerPacket(size_t words, bool isSuccessful) {
+    printInfo = false;
+
     if (words <= 1) 
         return Status::Error;
     words -= 1; // remove header
@@ -37,10 +39,12 @@ Tracker::Status Tracker::moveForwards() {
             BOOST_LOG_TRIVIAL(trace) << "All registers complete: moving to next repeat";
             currTestRegister = 0;
             currTestRepeat++;
+            printInfo = true;
         }
     } else {
         BOOST_LOG_TRIVIAL(trace) << "Moving to next repeat";
         currTestRepeat++;
+        printInfo = true;
     }
 
     if (currTestRepeat >= cfg.tests[currTest].repeats) {
@@ -50,6 +54,7 @@ Tracker::Status Tracker::moveForwards() {
             currTest++;
         } while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled);
         seqId = 0;
+        printInfo = true;
 
         if (currTest >= cfg.tests.size()) {
             BOOST_LOG_TRIVIAL(trace) << "All tests performed, resetting tracker";

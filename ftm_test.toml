@@ -1,0 +1,37 @@
+[global]
+name = "FTM tests" 
+register_file = "ftm_registers.csv"
+rng_seed = 36
+alf = { name = "ALF_FTM" }
+
+[[tests]]
+name = "Operation test"
+enabled = true
+registers = [0x1004, 0x1005]
+operations = [
+    { type = "write", data = [0xbeef] },
+    { type = "rmw_sum", data = [0x1fbe] },
+    { type = "rmw_bits", data = [0xf000, 0x200d] },
+    { type = "read" },
+]
+split_seq = true
+
+[[tests]]
+name = "Packet splitting test"
+enabled = true
+registers = [{ begin = 0x00, end = 0xff }]
+operations = [
+    { type = "read" },
+]
+
+[[tests]]
+name = "Load test"
+enabled = false
+registers = [0x1004]
+operations = [
+    { type = "rmw_sum" },
+    { type = "read" },
+]
+repeats = 1024
+wait = 0
+randomise_operations = true

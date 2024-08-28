@@ -5,7 +5,7 @@
 MockConfig::MockConfig(int argc, const char** argv) {
     // Declare the supported options.
     po::options_description desc("Allowed options");
-    desc.add_options()("help,h", "see available options")("config_file,c", po::value<std::string>(&configFilename), "set path to config file")
+    desc.add_options()("help,h", "see available options")("verbose,v", "enable verbose mode")("config_file,c", po::value<std::string>(&configFilename), "set path to config file")
         ("log_file,f", po::value<std::string>(&logFilename)->default_value(""), "specify file path for the logs. If unspecified, logs get printed to stdout");
 
     // Parse the provided arguments
@@ -23,4 +23,6 @@ MockConfig::MockConfig(int argc, const char** argv) {
         std::cerr << "Error: no config file specified\n";
         exit(1);
     }
+
+    verbose = vm.count("verbose");
 }

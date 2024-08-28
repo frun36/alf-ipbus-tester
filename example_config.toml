@@ -2,56 +2,29 @@
 # with existing parsing libraries for e.g. C++ 
 
 [global]
-name = "Example config"                         # Name to be displayed when running the test
-register_file = "ftm_registers.csv"             # File from which to read the register info
-rng_seed = 36                                   # Seed of the RNG used for sequence randomisation
-
-[[tests]]
-name = "Read test"
-enabled = true                                 # Enables test
-registers = [{ begin = 0x0, end = 0xf }, 0xff]  # Register block to test (start-end inclusively) + one register
-operations = [{ type = "read" }]                # List of operations to be performed on each register
-repeats = 10
+name = "Example config"
+register_file = "ftm_registers.csv"                 # File from which to read the register map - info for mock as to which registers support read/write operations
+rng_seed = 36                                       # Seed of the RNG used for sequence randomisation (1 by default)
+alf = { name = "ALF_FTM", serial = 0, link = 0 }    # Parameters of tested ALF
 
 [[tests]]
 name = "Write test"
-enabled = true                                  # Enables test
-randomise_response = true                       # Whether response from mock should be randomised *
-randomise_operations = true                     # Whether order of operations should be randomised
-registers = [0x1, 0x2, 0x5]                     # List of registers to be tested
-operations = [                                  # List of operations to be performed
+enabled = true
+registers = [                                       # List of registers to be tested
+    { begin = 0x0, end = 0xf },                     # A register block, from begin to end inclusively
+    0x1004, 
+    0x1005, 
+]
+operations = [                                      # List of operations to be performed on each register
     { type = "read" },
     { type = "write", data = [0xdeadbeef] },
     { type = "rmw_bits", data = [0xfffff000, 0x00000001] },
 ]
-split_seq = true                                # Splits operations into separate sequences (by register)
-repeats = 100                                   # Repeats everything a specified number of times (1 by default)
-wait = 10000                                    # Wait time between test repeats (in us, 0 by default)
-
-[[tests]]
-name = "Packet splitting test"
-enabled = true
-registers = [{ begin = 0x0, end = 0xff }]
-operations = [
-    { type = "read" }
-]
-repeats = 2
-randomise_response = true
-
-[[tests]]
-name = "Load test"
-enabled = true
-registers = [{begin = 0x0, end = 0x9}]
-operations = [
-    { type = "rmw_bits", data = [0xdead, 0xbeef] }
-]
-split_seq = true
-repeats = 10
-wait = 100
-randomise_operations = true
-randomise_response = true
+randomise_response = true                           # Whether response from mock should be randomised to simulate failure (false by default)
+randomise_operations = true                         # Whether order of operations should be randomised (false by default)
+split_seq = true                                    # Whether operations for different registers should be in separate sequences (false by default)
+repeats = 100                                       # Repeats the test a specified number of times (1 by default)
+wait = 10000                                        # Wait time between test repeats (in us, 0 by default)
 
 # Notes:
-# - options marked with '*' are not yet developed
-# - the `register_file` will provide info on whether certain operations should be successful
-# - same type of RNG should be used for `mock` and `generator`, for predictable results
+# - same type of RNG is used for `mock` and `generator`, for predictable results and synchronisation

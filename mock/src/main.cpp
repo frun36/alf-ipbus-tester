@@ -13,7 +13,7 @@
 int main(int argc, const char **argv) {
     MockConfig mockCfg(argc, argv);
     
-    logging::init(mockCfg.logFilename);
+    logging::init(mockCfg.logFilename, mockCfg.verbose);
 
     Config cfg = Config::readFile(mockCfg.configFilename);
 
@@ -21,8 +21,10 @@ int main(int argc, const char **argv) {
     Mock mock(std::move(cfg));
     ipbus::IPbusSlave slave(io, mock, 50001);
     
-    slave.setRequestCallback([&mock](const ipbus::IPbusRequest& req) {
-        BOOST_LOG_TRIVIAL(debug) << "Test id: " << mock.trk.currTest << " register id: " << mock.trk.currTestRegister << " repeat: " << mock.trk.currTestRepeat << " (seq ID " << mock.trk.seqId << ", result: " << mock.cfg.tests[mock.trk.currTest].sequenceResponses[mock.trk.seqId] << ")";
+    slave.setRequestCallback([&mock, &cfg](const ipbus::IPbusRequest& req) {
+        BOOST_LOG_TRIVIAL(debug) << cfg.tests[mock.trk.currTest].name << ": register id " << mock.trk.currTestRegister << ", repeat " << mock.trk.currTestRepeat + 1 << "/" << cfg.tests[mock.trk.currTest].repeats << " (seq ID " << mock.trk.seqId << ", result: " << mock.cfg.tests[mock.trk.currTest].sequenceResponses[mock.trk.seqId] << ")";
+        if(mock.trk.printInfo)
+            BOOST_LOG_TRIVIAL(info) << cfg.tests[mock.trk.currTest].name << ": " << mock.trk.currTestRepeat + 1 << "/" << cfg.tests[mock.trk.currTest].repeats;
         if(req.isStatusRequest()) {
             BOOST_LOG_TRIVIAL(info) << "Status packet received";
         } else {
