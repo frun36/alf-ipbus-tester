@@ -18,7 +18,7 @@ struct Tracker {
     size_t seqId;
     size_t remaining;
 
-    Tracker(const Config& cfg) : cfg(cfg), currTest(0), currTestRegister(0), currTestRepeat(0), seqId(0), remaining(0), isStarted(false) { 
+    Tracker(const Config& cfg) : cfg(cfg), currTest(0), currTestRegister(0), currTestRepeat(0), seqId(0), remaining(0) { 
         while (!cfg.tests[currTest].enabled && currTest < cfg.tests.size())
             currTest++;
     }
@@ -37,10 +37,5 @@ struct Tracker {
         currTestRepeat = 0;
         remaining = 0;
         seqId = 0;
-
-        isStarted = false;
     }
-
-   private:
-    bool isStarted;
 };

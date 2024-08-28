@@ -28,7 +28,6 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
     if(!tbl["registers"].is_array())
         throw TestConfig::Exception("registers must be an array");
 
-    // ToDo: handle invalid arguments!
     tbl["registers"].as_array()->for_each([this](auto& r) {
         if (r.is_table()) {
             const toml::table& t = *r.as_table();

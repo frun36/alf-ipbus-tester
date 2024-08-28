@@ -28,12 +28,7 @@ Tracker::Status Tracker::registerPacket(size_t words, bool isSuccessful) {
 }
 
 Tracker::Status Tracker::moveForwards() {
-    // if(isStarted) {
-        seqId++;
-    // } else {
-    //     isStarted = true;
-    //     return Tracker::Status::Ok;
-    // }
+    seqId++;
 
 
     if (cfg.tests[currTest].splitSeq) {
