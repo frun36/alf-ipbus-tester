@@ -71,5 +71,7 @@ int main(int argc, const char** argv) {
         exit(1);
     }
 
+    BOOST_LOG_TRIVIAL(info) << "All tests performed successfully";
+
     return 0;
 }

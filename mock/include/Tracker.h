@@ -18,7 +18,9 @@ struct Tracker {
     size_t seqId;
     size_t remaining;
 
-    Tracker(const Config& cfg) : cfg(cfg), currTest(0), currTestRegister(0), currTestRepeat(0), seqId(0), remaining(0) { 
+    bool printInfo;
+
+    Tracker(const Config& cfg) : cfg(cfg), currTest(0), currTestRegister(0), currTestRepeat(0), seqId(0), remaining(0), printInfo(true) { 
         while (!cfg.tests[currTest].enabled && currTest < cfg.tests.size())
             currTest++;
     }

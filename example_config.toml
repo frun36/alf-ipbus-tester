@@ -36,7 +36,7 @@ registers = [{ begin = 0x0, end = 0xff }]
 operations = [
     { type = "read" }
 ]
-repeats = 2
+repeats = 20
 randomise_response = true
 
 [[tests]]
