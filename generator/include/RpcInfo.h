@@ -12,8 +12,8 @@ class RpcInfo: public DimUpdatedInfo {
     std::string& m_receivedData;
     
 public:
-    RpcInfo(std::mutex& mtx, std::condition_variable& cv, bool& isDataReceived, std::string& receivedData)
-        : DimUpdatedInfo("ALF_FTM/SERIAL_0/LINK_0/SWT_SEQUENCE/RpcOut", -1), 
+    RpcInfo(std::mutex& mtx, std::condition_variable& cv, bool& isDataReceived, std::string& receivedData, const char* serviceName)
+        : DimUpdatedInfo(serviceName, -1), 
           m_mtx(mtx), 
           m_cv(cv), 
           m_isDataReceived(isDataReceived), 

@@ -22,7 +22,6 @@ int main(int argc, const char** argv) {
     bool isDataReceived = false;
     std::string receivedData = "";
 
-    RpcInfo info(mtx, cv, isDataReceived, receivedData);
 
     try {
         Config cfg = Config::readFile(genCfg.configFilename);
@@ -30,7 +29,9 @@ int main(int argc, const char** argv) {
         BOOST_LOG_TRIVIAL(info) << "Running generator for test suite \"" << cfg.global.name << "\"";
 
         std::string rpcInName =  cfg.global.alf.toString() + "/RpcIn";
+        std::string rpcOutName = cfg.global.alf.toString() + "/RpcOut";
 
+        RpcInfo info(mtx, cv, isDataReceived, receivedData, rpcOutName.c_str());
         for(const auto& test : cfg.tests) {
             size_t seqId = 0;
 
