@@ -16,8 +16,12 @@ private:
 public:
     Config cfg;
     Tracker trk;
+    bool enableTracking;
 
-    Mock(const Config&& cfg) : cfg(cfg), trk(cfg) {}
+    Mock(const Config&& cfg) : cfg(cfg), trk(cfg), enableTracking(cfg.tests.size() != 0) {
+        if (!enableTracking)
+            BOOST_LOG_TRIVIAL(warning) << "Test list is empty: mock tracking disabled";
+    }
 
     bool verifyRegisterBlockRead(uint32_t address, size_t words) const;
 
@@ -36,6 +40,8 @@ public:
     }
 
     bool getCurrResponse() const {
+        if(!enableTracking)
+            return true;
         return cfg.tests[trk.currTest].sequenceResponses[trk.seqId];
     }
 };

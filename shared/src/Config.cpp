@@ -39,17 +39,16 @@ Config Config::readFile(std::string filename) {
 
 Config::Config(const toml::table& tbl) 
     : global(*tbl["global"].as_table()) {
-    if(!tbl["tests"].is_array_of_tables())
-        throw Config::Exception("Tests must be an array of tables");
-    
-    const auto& testTables = *tbl["tests"].as_array();
+    if(tbl["tests"].is_array_of_tables()) {
+        const auto& testTables = *tbl["tests"].as_array();
 
-    testTables.for_each([this](const auto& t) { tests.emplace_back(TestConfig(*t.as_table())); });
+        testTables.for_each([this](const auto& t) { tests.emplace_back(TestConfig(*t.as_table())); });
 
-    for (auto& test : tests) {
-        if (test.randomiseOperations)
-            test.randomiseSequences(global.rng);
-        if (test.randomiseResponse)
-            test.randomiseResponses(global.rng);
+        for (auto& test : tests) {
+            if (test.randomiseOperations)
+                test.randomiseSequences(global.rng);
+            if (test.randomiseResponse)
+                test.randomiseResponses(global.rng);
+        }
     }
 }

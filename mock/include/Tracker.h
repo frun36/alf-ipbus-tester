@@ -21,7 +21,7 @@ struct Tracker {
     bool printInfo;
 
     Tracker(const Config& cfg) : cfg(cfg), currTest(0), currTestRegister(0), currTestRepeat(0), seqId(0), remaining(0), printInfo(true) { 
-        while (!cfg.tests[currTest].enabled && currTest < cfg.tests.size())
+        while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled)
             currTest++;
     }
 
@@ -32,7 +32,7 @@ struct Tracker {
     void reset() {
         currTest = 0;
         
-        while (!cfg.tests[currTest].enabled && currTest < cfg.tests.size())
+        while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled)
             currTest++;
 
         currTestRegister = 0;

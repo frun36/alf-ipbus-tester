@@ -1,0 +1,5 @@
+[global]
+name = "Basic mock"
+# register_file = "registers/fee_a0123456789_c0123456789.csv"
+register_file = "registers/ftm.csv"
+alf = { name = "ALF_MOCK" }
