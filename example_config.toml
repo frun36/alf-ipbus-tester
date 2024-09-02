@@ -3,7 +3,7 @@
 
 [global]
 name = "Example config"
-register_file = "build/ftm_registers.csv"           # File from which to read the mock register map (relative to config file path)
+register_file = "registers/ftm.csv"           # File from which to read the mock register map (relative to config file path)
 rng_seed = 36                                       # Seed of the RNG used for sequence randomisation (1 by default)
 alf = { name = "ALF_MOCK", serial = 0, link = 0 }   # Parameters of tested ALF
 

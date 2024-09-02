@@ -1,6 +1,6 @@
 [global]
 name = "FTM tests" 
-register_file = "build/ftm_registers.csv"
+register_file = "registers/ftm.csv"
 rng_seed = 36
 alf = { name = "ALF_MOCK" }
 
