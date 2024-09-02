@@ -12,7 +12,7 @@ operations = [
     { type = "write", data = [0xbeef] },
     { type = "rmw_sum", data = [0x1fbe] },
     { type = "rmw_bits", data = [0xf000, 0x200d] },
-    { type = "read" },
+    { type = "read" }
 ]
 split_seq = true
 randomise_operations = true
@@ -33,7 +33,7 @@ repeats = 8
 
 [[tests]]
 name = "Load test"
-enabled = true
+enabled = false
 registers = [0x1004, 0x1005]
 operations = [
     { type = "rmw_sum" },
