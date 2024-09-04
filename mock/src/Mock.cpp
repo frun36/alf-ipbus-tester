@@ -2,15 +2,19 @@
 
 bool Mock::verifyRegisterBlockRead(uint32_t address, size_t words) const {
     for (size_t i = address; i < address + words; i++)
-        if (!cfg.global.registerMap[i].isRead)
+        if (!cfg.global.registerMap[i].isRead) {
+            BOOST_LOG_TRIVIAL(error) << "Register 0x" << std::setfill('0') << std::setw(4) << std::hex << i << " is non-readable";
             return false;
+        }
     return true;
 }
 
 bool Mock::verifyRegisterBlockWrite(uint32_t address, size_t words) const {
     for (size_t i = address; i < address + words; i++)
-        if (!cfg.global.registerMap[i].isWrite)
+        if (!cfg.global.registerMap[i].isWrite) {
+            BOOST_LOG_TRIVIAL(error) << "Register 0x" << std::setfill('0') << std::setw(4) << std::hex << i << " is non-writable";
             return false;
+        }
     return true;
 }
 
