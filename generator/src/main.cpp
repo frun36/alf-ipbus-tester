@@ -31,6 +31,18 @@ int main(int argc, const char** argv) {
 
         std::string rpcInName =  cfg.global.alf.toString() + "/RpcIn";
         std::string rpcOutName = cfg.global.alf.toString() + "/RpcOut";
+        std::string serviceListName = cfg.global.alf.getName() + "/SERVICE_LIST";
+
+        char err = 0;
+        DimCurrentInfo serviceListInfo(serviceListName.c_str(), err);
+        std::string serviceList(serviceListInfo.getString());
+        BOOST_LOG_TRIVIAL(debug) << "ALF service list:\n" << serviceList;
+
+        if(serviceList.empty() || serviceList.find(cfg.global.alf.toString()) == std::string::npos) {
+            BOOST_LOG_TRIVIAL(fatal) << "ALF RPC unavailable!";
+            exit(2);
+        }
+
 
         RpcInfo info(mtx, cv, isDataReceived, receivedData, rpcOutName.c_str());
         for(const auto& test : cfg.tests) {

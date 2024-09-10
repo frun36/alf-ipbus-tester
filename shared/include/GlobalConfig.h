@@ -25,6 +25,8 @@ struct GlobalConfig {
         Alf() = default;
         Alf(const toml::table& tbl);
 
+        const std::string& getName() const { return name; }
+
         const std::string& toString() const { return serviceName; }
     };
 
