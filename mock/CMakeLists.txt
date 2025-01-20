@@ -11,7 +11,7 @@ include_directories(${PROJECT_SOURCE_DIR}/shared/include)
 include_directories(${PROJECT_SOURCE_DIR}/tomlplusplus/include)
 
 # Find Boost
-find_package(Boost REQUIRED COMPONENTS system log log_setup program_options)
+find_package(Boost 1.80 REQUIRED COMPONENTS system log log_setup program_options)
 
 # Add the source files
 file(GLOB SOURCES "src/*.cpp")

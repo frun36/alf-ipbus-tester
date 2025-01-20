@@ -17,6 +17,7 @@ struct GlobalConfig {
        private:
         std::string name;
         unsigned serial;
+        unsigned endpoint;
         unsigned link;
 
         std::string serviceName;

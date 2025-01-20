@@ -32,11 +32,12 @@ GlobalConfig::Alf::Alf(const toml::table& tbl) {
 
     name = nameOpt.value();
     serial = tbl["serial"].value_or<unsigned>(0);
+    endpoint = tbl["endpoint"].value_or<unsigned>(0);
     link = tbl["link"].value_or<unsigned>(0);
 
     std::stringstream ss;
 
-    ss << name << "/SERIAL_" << serial << "/LINK_" << link << "/SWT_SEQUENCE";
+    ss << name << "/SERIAL_" << serial << "/ENDPOINT_" << endpoint << "/LINK_" << link << "/SWT_SEQUENCE";
 
     serviceName = ss.str();
 }

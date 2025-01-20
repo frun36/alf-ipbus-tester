@@ -1,7 +1,7 @@
 #include "Register.h"
 
 Register::Register(std::string input)
-    : isRead(true), isWrite(false), data(0) {
+    : isRead(true), isWrite(false), data(0x00000000) {
     size_t commaPos = input.find(',');
 
     if (commaPos != std::string::npos) {

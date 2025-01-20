@@ -67,7 +67,7 @@ std::string SwtOperation::getSuccessResponse() const {
 }
 
 std::string SwtSequence::getRequest() const {
-    std::string result = "reset\n";
+    std::string result = "sc_reset\n";
     for (const auto& op : operations) {
         result += op.getRequest();
         result += "\n";

@@ -14,7 +14,7 @@ else()
 endif()
 
 # Find Boost
-find_package(Boost REQUIRED COMPONENTS system log log_setup program_options)
+find_package(Boost 1.80 REQUIRED COMPONENTS system log log_setup program_options)
 
 # Set the include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
