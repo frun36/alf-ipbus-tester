@@ -69,14 +69,14 @@ std::string SwtOperation::getSuccessResponse() const
             ss << "........";
             break;
         case Type::BlockReadInc:
-            for (uint32_t i = 0; i < ipbusWords - 1; i++) {
+            for (uint32_t i = 0; i < data0; i++) {
                 ss << "\n0x008";
                 ss << std::hex << std::setw(8) << std::setfill('0') << address + i;
                 ss << "........";
             }
             break;
         case Type::BlockReadNonInc:
-            for (uint32_t i = 0; i < ipbusWords - 1; i++) {
+            for (uint32_t i = 0; i < data0; i++) {
                 ss << "\n0x009";
                 ss << std::hex << std::setw(8) << std::setfill('0') << address;
                 ss << "........";

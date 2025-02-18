@@ -1,0 +1,25 @@
+[global]
+name = "Block read"
+register_file = "registers/fee_a0123456789_c0123456789.csv"
+rng_seed = 36
+alf = { name = "ALF_MOCK", serial = 0, endpoint = 0, link = 0 }
+
+[[tests]]
+name = "Fifo"
+enabled = true
+registers = [0x2F6]
+operations = [{ type = "block_read_non_incrementing", data = [547] }]
+# operations = [{ type = "read" }]
+repeats = 10
+wait = 10_000
+randomise_response = true
+
+[[tests]]
+name = "Block"
+enabled = true
+registers = [0x3000]
+operations = [{ type = "block_read_incrementing", data = [548] }]
+# operations = [{ type = "read" }]
+repeats = 10
+wait = 10_000
+randomise_response = true

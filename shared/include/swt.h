@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "../../IPbus/inc/IPbusPacket.h"
 
 struct SwtOperation {
     enum class Type {
@@ -19,28 +20,42 @@ struct SwtOperation {
     uint32_t address;
     uint32_t data0;
     uint32_t data1;
-    size_t ipbusWords;
+    size_t ipbusRequestWords;
 
     SwtOperation(Type type, uint32_t address, uint32_t data0 = 0, uint32_t data1 = 0)
         : type(type), address(address), data0(data0), data1(data1) {
         switch(type) {
             case Type::Read:
-                ipbusWords = 2;
+                ipbusRequestWords = 2;
                 break;
             case Type::Write:
             case Type::RmwSum:
-                ipbusWords = 3;
+                ipbusRequestWords = 3;
                 break;
             case Type::RmwBits:
-                ipbusWords = 4;
+                ipbusRequestWords = 4;
                 break;
             case Type::BlockReadInc:
             case Type::BlockReadNonInc:
-                ipbusWords = 1 + data0;
+                ipbusRequestWords = getBlockReadRequestWords(data0);
                 break;
             default:
-                ipbusWords = 0;
+                ipbusRequestWords = 0;
         }
+    }
+
+    uint32_t getBlockReadRequestWords(int64_t regBlockSize) {
+        uint32_t maxPayload = ipbus::maxPacket - 3;
+        std::array<uint32_t, 2> maxPayloads;
+        maxPayloads[0] = maxPayload / 2;
+        maxPayloads[1] = maxPayload - maxPayloads[0];
+
+        uint32_t count = 0;
+        while(regBlockSize > 0) {
+            regBlockSize -= maxPayloads[count % 2];
+            count++;
+        }
+        return 2 * count;
     }
 
     std::string getRequest() const;
@@ -70,7 +85,7 @@ struct SwtSequence {
     size_t getIPbusPayloadWords() const {
         size_t result = 0;
         for(const auto& op : operations)
-            result += op.ipbusWords;
+            result += op.ipbusRequestWords;
         return result;
     }
 
