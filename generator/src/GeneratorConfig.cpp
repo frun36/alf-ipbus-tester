@@ -2,14 +2,11 @@
 
 #include <iostream>
 
-GeneratorConfig::GeneratorConfig(int argc, const char** argv) {
+GeneratorConfig::GeneratorConfig(int argc, const char** argv)
+{
     // Declare the supported options.
     po::options_description desc("Allowed options");
-    desc.add_options()
-        ("help,h", "see available options")
-        ("verbose,v", "enable verbose mode")
-        ("config_file,c", po::value<std::string>(&configFilename), "set path to config file")
-        ("log_file,f", po::value<std::string>(&logFilename)->default_value(""), "specify file path for the logs. If unspecified, logs get printed to stdout");
+    desc.add_options()("help,h", "see available options")("verbose,v", "enable verbose mode")("config_file,c", po::value<std::string>(&configFilename), "set path to config file")("log_file,f", po::value<std::string>(&logFilename)->default_value(""), "specify file path for the logs. If unspecified, logs get printed to stdout");
 
     // Parse the provided arguments
     po::variables_map vm;

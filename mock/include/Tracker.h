@@ -20,20 +20,24 @@ struct Tracker {
 
     bool printInfo;
 
-    Tracker(const Config& cfg) : cfg(cfg), currTest(0), currTestRegister(0), currTestRepeat(0), seqId(0), remaining(0), printInfo(true) { 
-        while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled)
+    Tracker(const Config& cfg) : cfg(cfg), currTest(0), currTestRegister(0), currTestRepeat(0), seqId(0), remaining(0), printInfo(true)
+    {
+        while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled) {
             currTest++;
+        }
     }
 
     Status registerPacket(size_t words, bool isSuccessful);
 
     Status moveForwards();
 
-    void reset() {
+    void reset()
+    {
         currTest = 0;
-        
-        while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled)
+
+        while (currTest < cfg.tests.size() && !cfg.tests[currTest].enabled) {
             currTest++;
+        }
 
         currTestRegister = 0;
         currTestRepeat = 0;

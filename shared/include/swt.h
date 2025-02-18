@@ -2,9 +2,6 @@
 
 #include <boost/log/trivial.hpp>
 #include <cstdint>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -14,6 +11,8 @@ struct SwtOperation {
         Write,
         RmwBits,
         RmwSum,
+        BlockReadInc,
+        BlockReadNonInc,
     };
 
     Type type;
@@ -34,6 +33,10 @@ struct SwtOperation {
                 break;
             case Type::RmwBits:
                 ipbusWords = 4;
+                break;
+            case Type::BlockReadInc:
+            case Type::BlockReadNonInc:
+                ipbusWords = 1 + data0;
                 break;
             default:
                 ipbusWords = 0;

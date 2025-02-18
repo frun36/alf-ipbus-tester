@@ -4,22 +4,25 @@
 
 #include <mutex>
 #include <condition_variable>
+#include <string>
 
-class RpcInfo: public DimUpdatedInfo {
+class RpcInfo : public DimUpdatedInfo
+{
     std::mutex& m_mtx;
     std::condition_variable& m_cv;
     bool& m_isDataReceived;
     std::string& m_receivedData;
-    
-public:
+
+   public:
     RpcInfo(std::mutex& mtx, std::condition_variable& cv, bool& isDataReceived, std::string& receivedData, const char* serviceName)
-        : DimUpdatedInfo(serviceName, -1), 
-          m_mtx(mtx), 
-          m_cv(cv), 
-          m_isDataReceived(isDataReceived), 
+        : DimUpdatedInfo(serviceName, -1),
+          m_mtx(mtx),
+          m_cv(cv),
+          m_isDataReceived(isDataReceived),
           m_receivedData(receivedData) {}
 
-    void infoHandler() {
+    void infoHandler()
+    {
         std::lock_guard<std::mutex> lock(m_mtx);
         m_receivedData = getString();
         m_isDataReceived = true;

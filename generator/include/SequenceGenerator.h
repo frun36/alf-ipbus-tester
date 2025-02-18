@@ -3,13 +3,15 @@
 #include "swt.h"
 #include <cstdlib>
 
-class SequenceGenerator {
-public:
-    SwtSequence generateRandom(size_t operations) {
+class SequenceGenerator
+{
+   public:
+    SwtSequence generateRandom(size_t operations)
+    {
         SwtSequence seq = {};
 
         for (size_t i = 0; i < operations; i++) {
-            SwtOperation::Type type = static_cast<SwtOperation::Type>(std::rand() % 4);
+            SwtOperation::Type type = static_cast<SwtOperation::Type>(std::rand() % 4); // doesn't include block reads!
 
             // uint32_t address = std::rand();
             uint32_t address = 0x1004;
@@ -18,7 +20,7 @@ public:
 
             seq.addOperation(SwtOperation(type, address, data0, data1));
         }
-        
+
         return seq;
     };
 };

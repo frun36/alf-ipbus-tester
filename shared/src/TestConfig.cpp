@@ -1,10 +1,8 @@
 #include "TestConfig.h"
-#include "Config.h"
 
 #include <optional>
 
-
-std::string TestConfig::help = 
+std::string TestConfig::help =
     "Test config parameters:\n"
     " - name [= \"No name\"]\n"
     " - enabled [= true]\n"
@@ -16,7 +14,8 @@ std::string TestConfig::help =
     " - repeats [= 1]\n"
     " - wait [= 0]";
 
-TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
+TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0)
+{
     name = tbl["name"].value_or<std::string>("No name");
     enabled = tbl["enabled"].value_or<bool>(true);
     randomiseOperations = tbl["randomise_operations"].value_or<bool>(false);
@@ -25,8 +24,9 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
     repeats = tbl["repeats"].value_or<unsigned>(1);
     wait = tbl["wait"].value_or<unsigned>(0);
 
-    if(!tbl["registers"].is_array())
+    if (!tbl["registers"].is_array()) {
         throw TestConfig::Exception("registers must be an array");
+    }
 
     tbl["registers"].as_array()->for_each([this](auto& r) {
         if (r.is_table()) {
@@ -34,17 +34,21 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
             std::optional<uint32_t> begin = t["begin"].value<uint32_t>();
             std::optional<uint32_t> end = t["end"].value<uint32_t>();
 
-            if(!begin.has_value())
+            if (!begin.has_value()) {
                 throw TestConfig::Exception("Register block entry must contain begin value");
-            
-            if(!end.has_value())
-                throw TestConfig::Exception("Register block entry must contain end value");
+            }
 
-            for (uint32_t addr = begin.value(); addr <= end.value(); addr++)
+            if (!end.has_value()) {
+                throw TestConfig::Exception("Register block entry must contain end value");
+            }
+
+            for (uint32_t addr = begin.value(); addr <= end.value(); addr++) {
                 registers.push_back(addr);
+            }
         } else {
-            if(!r.is_integer())
+            if (!r.is_integer()) {
                 throw TestConfig::Exception("Register address must be an integer");
+            }
 
             auto i = *r.as_integer();
             registers.push_back(i.get());
@@ -54,13 +58,15 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
     SwtSequence sequence;
     for (auto reg : registers) {
 
-        if(!tbl["operations"].is_array())
+        if (!tbl["operations"].is_array()) {
             throw TestConfig::Exception("operations must be an array");
+        }
 
-        tbl["operations"].as_array()->for_each([this, reg, &sequence](const auto& o) {
-            if(!o.is_table())
+        tbl["operations"].as_array()->for_each([reg, &sequence](const auto& o) {
+            if (!o.is_table()) {
                 throw TestConfig::Exception("Invalid operations entry");
-            
+            }
+
             const toml::table& t = *o.as_table();
 
             std::string typeStr = t["type"].value_or<std::string>("");
@@ -84,6 +90,14 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
                 type = SwtOperation::Type::RmwSum;
 
                 data0 = t["data"][0].value_or<uint32_t>(0);
+            } else if (typeStr == "block_read_incrementing") {
+                type = SwtOperation::Type::BlockReadInc;
+
+                data0 = t["data"][0].value_or<uint32_t>(0);
+            } else if (typeStr == "block_read_non_incrementing") {
+                type = SwtOperation::Type::BlockReadNonInc;
+
+                data0 = t["data"][0].value_or<uint32_t>(0);
             } else {
                 throw TestConfig::Exception("Invalid SWT operation type " + typeStr);
             }
@@ -97,26 +111,32 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0) {
         }
     }
 
-    if(!splitSeq)
+    if (!splitSeq) {
         sequences.push_back(sequence);
+    }
 
     singleIPbusPayloadWords = sequences[0].getIPbusPayloadWords();
 
     sequenceResponses.resize(sequences.size() * repeats);
 
-    for(size_t i = 0; i < sequenceResponses.size(); i++)
+    for (size_t i = 0; i < sequenceResponses.size(); i++) {
         sequenceResponses[i] = true;
-}
-
-void TestConfig::randomiseSequences(Rng& rng) {
-    for(auto& seq : sequences) {
-        size_t n = seq.operations.size();
-        for(size_t i = 0; i < n; i++)
-            std::swap(seq.operations[i], seq.operations[rng.randint(0, n - 1)]);
     }
 }
 
-void TestConfig::randomiseResponses(Rng& rng) {
-    for(size_t i = 0; i < sequenceResponses.size(); i++)
+void TestConfig::randomiseSequences(Rng& rng)
+{
+    for (auto& seq : sequences) {
+        size_t n = seq.operations.size();
+        for (size_t i = 0; i < n; i++) {
+            std::swap(seq.operations[i], seq.operations[rng.randint(0, n - 1)]);
+        }
+    }
+}
+
+void TestConfig::randomiseResponses(Rng& rng)
+{
+    for (size_t i = 0; i < sequenceResponses.size(); i++) {
         sequenceResponses[i] = (rng.randint(0, 4) != 0);
+    }
 }

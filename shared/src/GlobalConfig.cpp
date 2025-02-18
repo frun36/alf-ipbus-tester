@@ -1,5 +1,4 @@
 #include "GlobalConfig.h"
-#include "Config.h"
 
 #include <iostream>
 #include <optional>
