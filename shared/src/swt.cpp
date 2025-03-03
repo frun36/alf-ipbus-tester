@@ -32,15 +32,16 @@ std::string SwtOperation::getRequest() const
     ss << std::hex << std::setw(8) << std::setfill('0') << address;
     ss << std::hex << std::setw(8) << std::setfill('0') << data0;
     ss << ",write";
-    if (type == Type::Read || type == Type::RmwBits || type == Type::RmwSum || type == Type::BlockReadInc || type == Type::BlockReadNonInc) {
-        ss << "\nread";
-    }
 
     if (type == Type::RmwBits) {
         ss << "\n0x003";
         ss << std::hex << std::setw(8) << std::setfill('0') << address;
         ss << std::hex << std::setw(8) << std::setfill('0') << data1;
         ss << ",write";
+    }
+
+    if (type == Type::Read || type == Type::RmwBits || type == Type::RmwSum || type == Type::BlockReadInc || type == Type::BlockReadNonInc) {
+        ss << "\nread";
     }
 
     return ss.str();
@@ -58,10 +59,10 @@ std::string SwtOperation::getSuccessResponse() const
             ss << "........";
             break;
         case Type::RmwBits:
+            ss << "\n0";
             ss << "\n0x002";
             ss << std::hex << std::setw(8) << std::setfill('0') << address;
             ss << "........";
-            ss << "\n0";
             break;
         case Type::RmwSum:
             ss << "\n0x004";
