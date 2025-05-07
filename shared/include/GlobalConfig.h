@@ -2,8 +2,8 @@
 
 #include <string>
 
+#include "RegisterMap.h"
 #include "toml++/toml.hpp"
-#include "Register.h"
 #include "Rng.h"
 
 struct GlobalConfig {
@@ -35,7 +35,7 @@ struct GlobalConfig {
 
     std::string name;
     std::string registerFile;
-    std::vector<Register> registerMap;
+    RegisterMap registerMap;
     Rng rng;
     unsigned rngSeed;
     Alf alf;
