@@ -1,5 +1,6 @@
 #pragma once
 
+#include <error.h>
 #include <expected>
 #include <string>
 
@@ -8,13 +9,6 @@
 #include "Rng.h"
 
 struct GlobalConfig {
-    struct Exception : public std::runtime_error {
-        Exception(const std::string& msg)
-            : std::runtime_error(msg)
-        {
-        }
-    };
-
     class Alf
     {
        private:
@@ -27,7 +21,9 @@ struct GlobalConfig {
 
        public:
         Alf() = default;
-        Alf(const toml::table& tbl);
+        Alf(std::string name, unsigned int serial, unsigned int endpoint, unsigned int link, std::string serviceName)
+            : name(std::move(name)), serial(serial), endpoint(endpoint), link(link), serviceName(std::move(serviceName)) {}
+        static Result<Alf> fromToml(const toml::table& tbl);
 
         const std::string& getName() const { return name; }
 
@@ -39,18 +35,20 @@ struct GlobalConfig {
     std::string name;
     std::string registerFile;
     RegisterMap registerMap;
-    Rng rng;
     unsigned rngSeed;
+    Rng rng;
     Alf alf;
 
-    GlobalConfig(const toml::table& tbl);
+    static Result<GlobalConfig> fromToml(const toml::table& tbl);
 
-    void initRegisterMap()
+    Result<void> initRegisterMap()
     {
-        auto res = RegisterMap::readFromFile(registerFile);
-        if (!res) {
-            throw std::runtime_error(res.error());
-        }
-        registerMap = std::move(*res);
+        TRY_ASSIGN(RegisterMap::readFromFile(registerFile), registerMap);
+        return {};
     }
+
+    GlobalConfig() = default;
+
+    GlobalConfig(std::string name, std::string registerFile, unsigned int rngSeed, Rng rng, Alf alf)
+        : name(std::move(name)), registerFile(std::move(registerFile)), rngSeed(rngSeed), rng(rng), alf(std::move(alf)) {}
 };

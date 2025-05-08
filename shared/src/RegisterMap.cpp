@@ -1,10 +1,11 @@
 #include "RegisterMap.h"
+#include <error.h>
 #include <format>
 #include <ranges>
 #include <vector>
 #include <fstream>
 
-std::expected<void, std::string> RegisterMap::Register::writeValue(uint32_t newValue)
+Result<void> RegisterMap::Register::writeValue(uint32_t newValue)
 {
     for (auto&& param : parameters) {
         uint32_t tmp = newValue >> param.startBit;
@@ -16,15 +17,13 @@ std::expected<void, std::string> RegisterMap::Register::writeValue(uint32_t newV
 
         if (param.minValue) {
             if (paramValue < *param.minValue) {
-                return std::unexpected(
-                    std::format("{}: value {} is smaller than min value ({})", param.name, paramValue, *param.minValue));
+                return Err("{}: value {} is smaller than min value ({})", param.name, paramValue, *param.minValue);
             }
         }
 
         if (param.maxValue) {
             if (paramValue > *param.maxValue) {
-                return std::unexpected(
-                    std::format("{}: value {} is larger than max value ({})", param.name, paramValue, *param.maxValue));
+                return Err("{}: value {} is larger than max value ({})", param.name, paramValue, *param.maxValue);
             }
         }
     }
@@ -33,7 +32,7 @@ std::expected<void, std::string> RegisterMap::Register::writeValue(uint32_t newV
     return {};
 }
 
-std::expected<void, std::string> RegisterMap::handleLine(std::string_view line)
+Result<void> RegisterMap::handleLine(std::string_view line)
 {
     // base_addr,param_name,start_bit,end_bit,reg_block_size,min_value,max_value,is_signed,is_fifo,is_read_only
     auto parts = line | std::ranges::views::split(',');
@@ -44,7 +43,7 @@ std::expected<void, std::string> RegisterMap::handleLine(std::string_view line)
     }
 
     if (tokens.size() != 10) {
-        return std::unexpected("Invalid line in register file");
+        return Err("Invalid line '{}' in register file: expected 10 tokens, found {}", line, tokens.size());
     }
 
     try {
@@ -69,7 +68,7 @@ std::expected<void, std::string> RegisterMap::handleLine(std::string_view line)
 
         m_registers[baseAddr].parameters.emplace_back(paramName, startBit, endBit - startBit + 1, minValue, maxValue, isSigned, isFifo, isReadOnly);
     } catch (...) {
-        return std::unexpected("Invalid line in register file");
+        return Err("Invalid line '{}' format", line);
     }
 
     return {};
@@ -95,7 +94,7 @@ std::optional<std::reference_wrapper<RegisterMap::Register>> RegisterMap::getReg
     return it->second;
 }
 
-std::expected<void, std::string> RegisterMap::blockRead(uint32_t baseAddr, uint32_t words, uint32_t* out) const
+Result<void> RegisterMap::blockRead(uint32_t baseAddr, uint32_t words, uint32_t* out) const
 {
     for (size_t i = 0; i < words; i++) {
         uint32_t addr = baseAddr + i;
@@ -109,7 +108,7 @@ std::expected<void, std::string> RegisterMap::blockRead(uint32_t baseAddr, uint3
     return {};
 }
 
-std::expected<void, std::string> RegisterMap::blockWrite(uint32_t baseAddr, uint32_t words, const uint32_t* in)
+Result<void> RegisterMap::blockWrite(uint32_t baseAddr, uint32_t words, const uint32_t* in)
 {
     for (size_t i = 0; i < words; i++) {
         uint32_t addr = baseAddr + i;
@@ -126,7 +125,7 @@ std::expected<void, std::string> RegisterMap::blockWrite(uint32_t baseAddr, uint
     return {};
 }
 
-std::expected<RegisterMap, std::string> RegisterMap::readFromFile(std::string path)
+Result<RegisterMap> RegisterMap::readFromFile(std::string path)
 {
     RegisterMap map;
 
