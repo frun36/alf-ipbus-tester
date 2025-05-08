@@ -1,5 +1,6 @@
 #pragma once
 
+#include <expected>
 #include <string>
 
 #include "RegisterMap.h"
@@ -9,11 +10,13 @@
 struct GlobalConfig {
     struct Exception : public std::runtime_error {
         Exception(const std::string& msg)
-            : std::runtime_error(msg) {
+            : std::runtime_error(msg)
+        {
         }
     };
 
-    class Alf {
+    class Alf
+    {
        private:
         std::string name;
         unsigned serial;
@@ -42,7 +45,12 @@ struct GlobalConfig {
 
     GlobalConfig(const toml::table& tbl);
 
-    void initRegisterMap() {
-        registerMap = Register::readMapFromFile(registerFile);
+    void initRegisterMap()
+    {
+        auto res = RegisterMap::readFromFile(registerFile);
+        if (!res) {
+            throw std::runtime_error(res.error());
+        }
+        registerMap = std::move(*res);
     }
 };

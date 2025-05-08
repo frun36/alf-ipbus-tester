@@ -1,13 +1,10 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <iostream>
+
+using std::size_t;
 
 #include "Memory.h"
-#include "Register.h"
 #include "Tracker.h"
 #include "Config.h"
 
@@ -26,10 +23,6 @@ class Mock : public ipbus::Memory
         }
     }
 
-    bool verifyRegisterBlockRead(uint32_t address, size_t words) const;
-
-    bool verifyRegisterBlockWrite(uint32_t address, size_t words) const;
-
     bool dataRead(uint32_t address, size_t words, uint32_t* out) const override;
 
     bool dataWrite(uint32_t address, size_t words, const uint32_t* in) override;
@@ -38,7 +31,7 @@ class Mock : public ipbus::Memory
 
     void unlock() override {}
 
-    size_t getSize() const
+    size_t getSize() const override
     {
         return cfg.global.registerMap.size();
     }
