@@ -34,7 +34,7 @@ Result<void> RegisterMap::Register::writeValue(uint32_t newValue)
 
 Result<void> RegisterMap::handleLine(std::string_view line)
 {
-    // base_addr,param_name,start_bit,end_bit,reg_block_size,min_value,max_value,is_signed,is_fifo,is_read_only
+    // base_addr,param_name,start_bit,end_bit,reg_block_size,min_value,max_value,is_signed,is_fifo,is_read_only,default_raw_value
     auto parts = line | std::ranges::views::split(',');
     std::vector<std::string_view> tokens;
     tokens.reserve(10);
@@ -42,8 +42,8 @@ Result<void> RegisterMap::handleLine(std::string_view line)
         tokens.emplace_back(part.begin(), part.end());
     }
 
-    if (tokens.size() != 10) {
-        return Err("Invalid line '{}' in register file: expected 10 tokens, found {}", line, tokens.size());
+    if (tokens.size() != 11) {
+        return Err("Invalid line '{}' in register file: expected 11 tokens, found {}", line, tokens.size());
     }
 
     try {
@@ -65,6 +65,10 @@ Result<void> RegisterMap::handleLine(std::string_view line)
         bool isSigned = tokens[7] == "Y";
         bool isFifo = tokens[8] == "Y";
         bool isReadOnly = tokens[9] == "Y";
+
+        uint32_t defaultRawValue = std::stoul(std::string(tokens[10]));
+
+        m_registers[baseAddr].value |= (defaultRawValue << startBit);
 
         m_registers[baseAddr].parameters.emplace_back(paramName, startBit, endBit - startBit + 1, minValue, maxValue, isSigned, isFifo, isReadOnly);
     } catch (...) {
