@@ -1,8 +1,8 @@
 import argparse
 
 
-def validate_arguments(l):
-    for n in l:
+def validate_arguments(pm_idxs):
+    for n in pm_idxs:
         if n not in range(10):
             return False
     return True
@@ -59,6 +59,15 @@ def find_insert_index(base, tcm_lines):
 
 
 def connect_pm(pm_id, tcm_lines, pm_lines):
+    pm_link_ok_flag = f"PMA{pm_id}_LINK_OK" if pm_id < 10 else f"PMC{pm_id - 10}_LINK_OK"
+    for i in range(len(tcm_lines)):
+        split = tcm_lines[i].split(',')
+        if split[1] == pm_link_ok_flag:
+            split[-1] = '1'
+            new = ','.join(split)
+            print(f'Modifying: {tcm_lines[i]} -> {new}')
+            tcm_lines[i] = new + '\n'
+
     base = 0x200 * (pm_id + 1)
     new_pm_lines = shifted_pm_lines(base, pm_lines)
     insert_index = find_insert_index(base, tcm_lines)
@@ -72,17 +81,20 @@ if __name__ == "__main__":
                         default=[], help="List of connected A side PMs")
     parser.add_argument('-c', '--c', nargs='+', type=int,
                         default=[], help="List of connected C side PMs")
-    parser.add_argument('-t', '--tcm_file', nargs=1, type=str,
+    parser.add_argument('-t', '--tcm_file', type=str,
                         default="tcm.csv", help="Path to TCM register map file")
-    parser.add_argument('-p', '--pm_file', nargs=1, type=str,
+    parser.add_argument('-p', '--pm_file', type=str,
                         default="pm.csv", help="Path to PM register map file")
+    parser.add_argument('-o', '--output-file', type=str,
+                        default=None, help="Output filename - generated automatically if None")
 
     args = parser.parse_args()
 
     if not validate_arguments(args.a) or not validate_arguments(args.c):
         raise ValueError("PM index out of range")
 
-    filename = get_filename(args.a, args.c)
+    filename = get_filename(
+        args.a, args.c) if args.output_file is None else args.output_file
     print(
         f"Generating register map for TCM with PM A: {args.a}, PM C: {args.c} to file {filename}")
 
