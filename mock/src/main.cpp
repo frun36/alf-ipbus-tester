@@ -15,7 +15,12 @@ int main(int argc, const char** argv)
 
     logging::init(mockCfg.logFilename, mockCfg.verbose);
 
-    Config cfg = Config::readFile(mockCfg.configFilename);
+    auto res = Config::readFile(mockCfg.configFilename);
+    if (!res) {
+        BOOST_LOG_TRIVIAL(fatal) << res.error();
+        exit(1);
+    }
+    Config cfg = *res;
 
     BOOST_LOG_TRIVIAL(info) << "Running mock for test suite \"" << cfg.global.name << "\"";
 
@@ -29,18 +34,18 @@ int main(int argc, const char** argv)
             return;
         }
 
-        BOOST_LOG_TRIVIAL(debug) 
-            << cfg.tests[mock.trk.currTest].name 
-            << ": register id " << mock.trk.currTestRegister 
-            << ", repeat " << mock.trk.currTestRepeat + 1 
-            << "/" << cfg.tests[mock.trk.currTest].repeats 
-            << " (seq ID " << mock.trk.seqId 
+        BOOST_LOG_TRIVIAL(debug)
+            << cfg.tests[mock.trk.currTest].name
+            << ": register id " << mock.trk.currTestRegister
+            << ", repeat " << mock.trk.currTestRepeat + 1
+            << "/" << cfg.tests[mock.trk.currTest].repeats
+            << " (seq ID " << mock.trk.seqId
             << ", result: " << mock.cfg.tests[mock.trk.currTest].sequenceResponses[mock.trk.seqId] << ")";
 
         if (req.isStatusRequest()) {
             BOOST_LOG_TRIVIAL(info) << "Status packet received";
             if (mock.trk.printInfo) {
-                BOOST_LOG_TRIVIAL(info) 
+                BOOST_LOG_TRIVIAL(info)
                     << cfg.tests[mock.trk.currTest].name << ": " << mock.trk.currTestRepeat + 1 << "/" << cfg.tests[mock.trk.currTest].repeats;
             }
         } else {

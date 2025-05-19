@@ -1,19 +1,16 @@
 #pragma once
 
+#include <error.h>
+#include <expected>
 #include <string>
 
+#include "RegisterMap.h"
 #include "toml++/toml.hpp"
-#include "Register.h"
 #include "Rng.h"
 
 struct GlobalConfig {
-    struct Exception : public std::runtime_error {
-        Exception(const std::string& msg)
-            : std::runtime_error(msg) {
-        }
-    };
-
-    class Alf {
+    class Alf
+    {
        private:
         std::string name;
         unsigned serial;
@@ -24,7 +21,9 @@ struct GlobalConfig {
 
        public:
         Alf() = default;
-        Alf(const toml::table& tbl);
+        Alf(std::string name, unsigned int serial, unsigned int endpoint, unsigned int link, std::string serviceName)
+            : name(std::move(name)), serial(serial), endpoint(endpoint), link(link), serviceName(std::move(serviceName)) {}
+        static Result<Alf> fromToml(const toml::table& tbl);
 
         const std::string& getName() const { return name; }
 
@@ -35,14 +34,21 @@ struct GlobalConfig {
 
     std::string name;
     std::string registerFile;
-    std::vector<Register> registerMap;
-    Rng rng;
+    RegisterMap registerMap;
     unsigned rngSeed;
+    Rng rng;
     Alf alf;
 
-    GlobalConfig(const toml::table& tbl);
+    static Result<GlobalConfig> fromToml(const toml::table& tbl);
 
-    void initRegisterMap() {
-        registerMap = Register::readMapFromFile(registerFile);
+    Result<void> initRegisterMap()
+    {
+        TRY_ASSIGN(RegisterMap::readFromFile(registerFile), registerMap);
+        return {};
     }
+
+    GlobalConfig() = default;
+
+    GlobalConfig(std::string name, std::string registerFile, unsigned int rngSeed, Rng rng, Alf alf)
+        : name(std::move(name)), registerFile(std::move(registerFile)), rngSeed(rngSeed), rng(rng), alf(std::move(alf)) {}
 };

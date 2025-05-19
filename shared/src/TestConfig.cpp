@@ -14,60 +14,64 @@ std::string TestConfig::help =
     " - repeats [= 1]\n"
     " - wait [= 0]";
 
-TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0)
+Result<TestConfig> TestConfig::fromToml(const toml::table& tbl)
 {
-    name = tbl["name"].value_or<std::string>("No name");
-    enabled = tbl["enabled"].value_or<bool>(true);
-    randomiseOperations = tbl["randomise_operations"].value_or<bool>(false);
-    randomiseResponse = tbl["randomise_response"].value_or<bool>(false);
-    splitSeq = tbl["split_seq"].value_or<bool>(false);
-    repeats = tbl["repeats"].value_or<unsigned>(1);
-    wait = tbl["wait"].value_or<unsigned>(0);
+    auto name = tbl["name"].value_or<std::string>("No name");
+    auto enabled = tbl["enabled"].value_or<bool>(true);
+    auto randomiseOperations = tbl["randomise_operations"].value_or<bool>(false);
+    auto randomiseResponse = tbl["randomise_response"].value_or<bool>(false);
+    auto splitSeq = tbl["split_seq"].value_or<bool>(false);
+    auto repeats = tbl["repeats"].value_or<unsigned>(1);
+    auto wait = tbl["wait"].value_or<unsigned>(0);
+    auto singleIPbusPayloadWords = 0;
+    std::vector<uint32_t> registers;
 
     if (!tbl["registers"].is_array()) {
-        throw TestConfig::Exception("registers must be an array");
+        return Err("registers must be an array");
     }
 
-    tbl["registers"].as_array()->for_each([this](auto& r) {
-        if (r.is_table()) {
-            const toml::table& t = *r.as_table();
+    for (auto it = tbl["registers"].as_array()->begin(); it < tbl["registers"].as_array()->end(); it++) {
+        if (it->is_table()) {
+            const toml::table& t = *it->as_table();
             std::optional<uint32_t> begin = t["begin"].value<uint32_t>();
             std::optional<uint32_t> end = t["end"].value<uint32_t>();
 
             if (!begin.has_value()) {
-                throw TestConfig::Exception("Register block entry must contain begin value");
+                return Err("Register block entry must contain begin value");
             }
 
             if (!end.has_value()) {
-                throw TestConfig::Exception("Register block entry must contain end value");
+                return Err("Register block entry must contain end value");
             }
 
             for (uint32_t addr = begin.value(); addr <= end.value(); addr++) {
                 registers.push_back(addr);
             }
         } else {
-            if (!r.is_integer()) {
-                throw TestConfig::Exception("Register address must be an integer");
+            if (!it->is_integer()) {
+                return Err("Register address must be an integer");
             }
 
-            auto i = *r.as_integer();
+            auto i = *it->as_integer();
             registers.push_back(i.get());
         }
-    });
+    }
 
+    std::vector<SwtSequence> sequences;
+    std::vector<bool> sequenceResponses;
     SwtSequence sequence;
     for (auto reg : registers) {
 
         if (!tbl["operations"].is_array()) {
-            throw TestConfig::Exception("operations must be an array");
+            return Err("operations must be an array");
         }
 
-        tbl["operations"].as_array()->for_each([reg, &sequence](const auto& o) {
-            if (!o.is_table()) {
-                throw TestConfig::Exception("Invalid operations entry");
+        for (auto it = tbl["operations"].as_array()->begin(); it < tbl["operations"].as_array()->end(); it++) {
+            if (!it->is_table()) {
+                return Err("Invalid operations entry");
             }
 
-            const toml::table& t = *o.as_table();
+            const toml::table& t = *it->as_table();
 
             std::string typeStr = t["type"].value_or<std::string>("");
 
@@ -99,11 +103,11 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0)
 
                 data0 = t["data"][0].value_or<uint32_t>(0);
             } else {
-                throw TestConfig::Exception("Invalid SWT operation type " + typeStr);
+                return Err("Invalid SWT operation type {}", typeStr);
             }
 
             sequence.addOperation(SwtOperation(type, reg, data0, data1));
-        });
+        }
 
         if (splitSeq) {
             sequences.push_back(sequence);
@@ -122,6 +126,19 @@ TestConfig::TestConfig(const toml::table& tbl) : singleIPbusPayloadWords(0)
     for (size_t i = 0; i < sequenceResponses.size(); i++) {
         sequenceResponses[i] = true;
     }
+
+    return TestConfig(
+        name,
+        enabled,
+        randomiseOperations,
+        randomiseResponse,
+        registers,
+        sequences,
+        sequenceResponses,
+        repeats,
+        wait,
+        singleIPbusPayloadWords,
+        splitSeq);
 }
 
 void TestConfig::randomiseSequences(Rng& rng)
